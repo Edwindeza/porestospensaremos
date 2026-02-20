@@ -1,7 +1,12 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import { useDataStore } from '../store/useDataStore'
 
 export default function Inicio() {
+  const reiniciar = useDataStore((s) => s.reiniciar)
+  const descartadosTotal = useDataStore((s) => s.descartadosTotal)
+  const hayAlgoQueLimpiar = descartadosTotal?.size > 0
+
   return (
     <>
       <Helmet>
@@ -12,25 +17,26 @@ export default function Inicio() {
         <h1>Por qué sí</h1>
         <p>
           Herramienta informativa para explorar partidos según indicadores. En cada pantalla
-          mové la <strong>raya roja</strong> según tu criterio: los partidos que no pasen
+          mueve la <strong>raya roja</strong> según tu criterio: los partidos que no pasen
           quedarán en gris en las siguientes y al final podés ver cuáles cumplen todos.
         </p>
         <div className="card">
-          <p style={{ marginTop: 0 }}>
+          <div className="inicio-actions">
             <Link to="/indicador/1" className="btn">
               Comenzar por Indicador 1 (Sentencias)
             </Link>
-          </p>
-          <p>
             <Link to="/ranking" className="btn btn-secondary">
               Ver tablas de ranking (1–35 y sobre 100)
             </Link>
-          </p>
+          </div>
+          {hayAlgoQueLimpiar && (
+            <p className="inicio-reiniciar-wrap">
+              <button type="button" className="btn btn-outline" onClick={reiniciar} aria-label="Borrar umbrales y volver a empezar">
+                Reiniciar (limpiar todo)
+              </button>
+            </p>
+          )}
         </div>
-        <p className="page-links" style={{ marginTop: '1.5rem' }}>
-          <Link to="/metodologia">Cómo se creó esta información</Link>
-          <Link to="/privacidad">Privacidad</Link>
-        </p>
       </div>
     </>
   )

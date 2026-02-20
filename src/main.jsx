@@ -2,7 +2,7 @@ import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
-import { useDataStore } from './store/useDataStore'
+import { useDataStore } from './store/useDataStore.js'
 import App from './App.jsx'
 import './index.css'
 

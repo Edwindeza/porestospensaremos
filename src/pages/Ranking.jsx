@@ -10,6 +10,7 @@ function formatValor(v) {
 export default function Ranking() {
   const ranking = useDataStore((s) => s.ranking)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
+  const reiniciar = useDataStore((s) => s.reiniciar)
 
   if (!ranking) {
     return (
@@ -43,7 +44,7 @@ export default function Ranking() {
         </p>
 
         <div className="card">
-          <h2 className="ranking-tabla-titulo">Ranking (escala 35 — 35 = óptimo)</h2>
+          <h2 className="ranking-tabla-titulo">Ranking (escala 22 — 35 = óptimo)</h2>
           <div className="table-wrap">
             <table className="ranking-tabla">
               <thead>
@@ -70,7 +71,7 @@ export default function Ranking() {
         </div>
 
         <div className="card">
-          <h2 className="ranking-tabla-titulo">Porcentaje (escala 100 — 100 = óptimo)</h2>
+          <h2 className="ranking-tabla-titulo">Porcentaje (escala 86 — 100 = óptimo)</h2>
           <div className="table-wrap">
             <table className="ranking-tabla">
               <thead>
@@ -99,6 +100,11 @@ export default function Ranking() {
         <p className="page-links">
           <Link to="/" className="btn btn-secondary">Volver al inicio</Link>
           <Link to="/indicador/1" className="btn">Indicador 1</Link>
+          {descartadosTotal?.size > 0 && (
+            <button type="button" className="btn btn-outline" onClick={reiniciar} aria-label="Borrar umbrales y volver a empezar">
+              Reiniciar (limpiar todo)
+            </button>
+          )}
         </p>
       </div>
     </>

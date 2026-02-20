@@ -104,6 +104,29 @@ export const useDataStore = create((set) => ({
     }
   },
 
+  /** Limpia umbrales guardados y vuelve a valores por defecto (nadie tachado). */
+  reiniciar: () => {
+    setStoredUmbrales({})
+    set((state) => {
+      const ind = state.indicadores
+      if (!ind?.meta) {
+        return { umbrales: {}, descartadosPorIndicador: {}, descartadosTotal: new Set() }
+      }
+      const nextUmbrales = {}
+      for (const id of Object.keys(ind.meta)) {
+        const meta = ind.meta[id]
+        nextUmbrales[id] = meta.higherIsBetter ? meta.min : meta.max
+      }
+      const descartadosPorIndicador = computeDescartadosPorIndicador(ind, nextUmbrales)
+      const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)
+      return {
+        umbrales: nextUmbrales,
+        descartadosPorIndicador,
+        descartadosTotal,
+      }
+    })
+  },
+
   /** Actualiza solo el umbral del indicador indicado (id). Cada indicador es independiente. */
   setUmbral: (id, value) => {
     const num = value === '' || value == null ? undefined : Number(value)
