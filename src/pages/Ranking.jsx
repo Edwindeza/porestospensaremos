@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
@@ -8,6 +9,7 @@ function formatValor(v) {
 }
 
 export default function Ranking() {
+  const [tabActivo, setTabActivo] = useState('ranking')
   const ranking = useDataStore((s) => s.ranking)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const reiniciar = useDataStore((s) => s.reiniciar)
@@ -30,6 +32,21 @@ export default function Ranking() {
   const ordenados35 = [...partidos].sort((a, b) => (b.valor35 ?? -1) - (a.valor35 ?? -1))
   const ordenados100 = [...partidos].sort((a, b) => (b.valor100 ?? -1) - (a.valor100 ?? -1))
 
+  const etiquetasPesos = {
+    sentencias: 'Sentencias (I1)',
+    preparacion: 'Preparación (I2)',
+    ingresosNulos: 'Ingresos cero (I3)',
+    ingresosEfectivos: 'Ingresos efectivos (I4)',
+    infiltracion: 'Historial asociado #PorEstosNo (I5)',
+    reeleccion: 'Reelección (I6)',
+    equipoCompleto: 'Candidatos hábiles / equipo completo (I7)',
+    reinfo: 'REINFO (I8)'
+  }
+  const textoPesos = Object.entries(pesos)
+    .filter(([k]) => k !== 'total' && etiquetasPesos[k] != null)
+    .map(([k, v]) => `${etiquetasPesos[k]} ${v}%`)
+    .join(', ')
+
   return (
     <>
       <Helmet>
@@ -39,12 +56,55 @@ export default function Ranking() {
       <div className="page">
         <h1>Ranking de partidos</h1>
         <p className="page-subtitle">
-          Valor compuesto según pesos: Sentencias {pesos.sentencias}%, Preparación {pesos.preparacion}%, Infiltración {pesos.infiltracion}%, etc.
+          Valor compuesto según pesos: {textoPesos}.
+          <br />
           Los partidos que descartaste en los indicadores se muestran en gris.
         </p>
 
-        <div className="card">
-          <h2 className="ranking-tabla-titulo">Ranking (escala 22 — 35 = óptimo)</h2>
+        <div className="ranking-tabs" role="tablist" aria-label="Ranking y Porcentaje">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActivo === 'ranking'}
+            aria-controls="panel-ranking"
+            id="tab-ranking"
+            className={`ranking-tab ${tabActivo === 'ranking' ? 'ranking-tab-activo' : ''}`}
+            onClick={() => setTabActivo('ranking')}
+          >
+            Ranking
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActivo === 'porcentaje'}
+            aria-controls="panel-porcentaje"
+            id="tab-porcentaje"
+            className={`ranking-tab ${tabActivo === 'porcentaje' ? 'ranking-tab-activo' : ''}`}
+            onClick={() => setTabActivo('porcentaje')}
+          >
+            Porcentaje
+          </button>
+        </div>
+
+        {tabActivo === 'ranking' && (
+        <div className="card" id="panel-ranking" role="tabpanel" aria-labelledby="tab-ranking">
+          <div className="ranking-tabla-header">
+            <h2 className="ranking-tabla-titulo">Ranking (escala 22 — 35 = óptimo)</h2>
+            <div className="ranking-leyenda" aria-label="Leyenda por colores">
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-top1" aria-hidden="true" />
+                Primero
+              </span>
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-siguen" aria-hidden="true" />
+                Siguen
+              </span>
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-descartado" aria-hidden="true" />
+                Tachados
+              </span>
+            </div>
+          </div>
           <div className="table-wrap">
             <table className="ranking-tabla">
               <thead>
@@ -69,9 +129,27 @@ export default function Ranking() {
             </table>
           </div>
         </div>
+        )}
 
-        <div className="card">
-          <h2 className="ranking-tabla-titulo">Porcentaje (escala 86 — 100 = óptimo)</h2>
+        {tabActivo === 'porcentaje' && (
+        <div className="card" id="panel-porcentaje" role="tabpanel" aria-labelledby="tab-porcentaje">
+          <div className="ranking-tabla-header">
+            <h2 className="ranking-tabla-titulo">Porcentaje (escala 86 — 100 = óptimo)</h2>
+            <div className="ranking-leyenda" aria-label="Leyenda por colores">
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-top1" aria-hidden="true" />
+                Primero
+              </span>
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-siguen" aria-hidden="true" />
+                Siguen
+              </span>
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-descartado" aria-hidden="true" />
+                Tachados
+              </span>
+            </div>
+          </div>
           <div className="table-wrap">
             <table className="ranking-tabla">
               <thead>
@@ -96,6 +174,7 @@ export default function Ranking() {
             </table>
           </div>
         </div>
+        )}
 
         <p className="page-links">
           <Link to="/" className="btn btn-secondary">Volver al inicio</Link>

@@ -32,7 +32,7 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --header-h: 3.5rem;
-  --sidebar-w: 14rem;
+  --sidebar-w: 16rem;
   --content-max: 42rem;
 }
 
@@ -339,7 +339,7 @@ body {
 .app-nav-lateral-list a {
   display: block;
   padding: var(--space-sm) var(--space-md);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--color-text-muted);
   text-decoration: none;
@@ -601,6 +601,14 @@ body {
 }
 
 @media (max-width: 768px) {
+  .indicador-info-btn-page {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+
   .indicador-derecha {
     max-width: 100%;
   }
@@ -800,6 +808,38 @@ body {
   margin-bottom: var(--space-sm);
 }
 
+.metodologia-formula {
+  margin-bottom: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+.metodologia-formula:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+.metodologia-formula h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-sm);
+  color: var(--peru-red);
+}
+.metodologia-formula-ecuacion {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.9375rem;
+  background: var(--color-bg);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  margin: 0 0 var(--space-md);
+  overflow-x: auto;
+}
+.metodologia-formula-lista {
+  margin: 0 0 var(--space-md);
+  padding-left: 1.25rem;
+}
+.metodologia-formula-lista li {
+  margin-bottom: var(--space-xs);
+}
+
 /* Enlaces tipo botón — bandera Perú */
 .btn {
   display: inline-flex;
@@ -890,10 +930,43 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
   padding: var(--space-lg);
 }
 
+.indicador-escala-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.indicador-escala-wrap .indicador-escala {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.indicador-info-btn-page {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 0.875rem;
+}
+
 .indicador-escala {
   font-size: 0.875rem;
   color: var(--color-text-muted);
   margin-bottom: var(--space-md);
+}
+
+.indicador-escala-ref {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.8125rem;
+  font-style: italic;
+}
+
+.indicador-ejemplo {
+  margin: 0 0 var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-style: italic;
 }
 
 .indicador-rango-fila {
@@ -1068,11 +1141,85 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
 }
 
 /* Tablas ranking */
+.ranking-tabla-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
 .ranking-tabla-titulo {
   font-size: 1.125rem;
   font-weight: 600;
-  margin: 0 0 var(--space-md);
+  margin: 0;
   color: var(--color-text);
+}
+
+.ranking-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+
+.ranking-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.ranking-leyenda-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ranking-leyenda-top1 {
+  background-color: var(--peru-gold);
+}
+
+.ranking-leyenda-siguen {
+  background-color: rgba(212, 175, 55, 0.5);
+  border: 1px solid var(--peru-gold);
+}
+
+.ranking-leyenda-descartado {
+  background-color: var(--gray-neutral);
+}
+
+.ranking-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: var(--space-md);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.ranking-tab {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ranking-tab:hover {
+  color: var(--color-text);
+}
+
+.ranking-tab-activo {
+  color: var(--peru-red);
+  border-bottom-color: var(--peru-red);
 }
 
 .table-wrap {

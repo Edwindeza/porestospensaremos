@@ -1,12 +1,13 @@
 {
   "pesos": {
-    "sentencias": 25,
+    "sentencias": 20,
     "preparacion": 20,
     "ingresosNulos": 10,
     "ingresosEfectivos": 5,
     "infiltracion": 25,
     "reeleccion": 10,
     "equipoCompleto": 5,
+    "reinfo": 5,
     "total": 100
   },
   "escalas": {

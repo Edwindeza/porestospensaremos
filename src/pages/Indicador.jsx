@@ -16,6 +16,7 @@ export default function Indicador() {
   const umbrales = useDataStore((s) => s.umbrales)
   const setUmbral = useDataStore((s) => s.setUmbral)
   const setUmbralRange = useDataStore((s) => s.setUmbralRange)
+  const setInfoIndicadorId = useDataStore((s) => s.setInfoIndicadorId)
   const descartadosPorIndicador = useDataStore((s) => s.descartadosPorIndicador)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const title = TITLES[id] || `Indicador ${id}`
@@ -83,10 +84,48 @@ export default function Indicador() {
       <div className="page page-indicador">
         <div className="indicador-derecha">
         <div className="card indicador-card">
-          <div className="indicador-escala">
-            {title}. Escala: {formatValue(min, meta.unit)} a {formatValue(max, meta.unit)}
-            {useRange && ' — Definí el rango aceptado (quedan fuera los que están por debajo del mínimo o por encima del máximo).'}
+          <div className="indicador-escala-wrap">
+            <div className="indicador-escala">
+              {title}.
+              <br />
+              Escala: {formatValue(min, meta.unit)} a {formatValue(max, meta.unit)}
+              {id === '1' && ' — 0 = nadie tiene sentencia / 100 = todos tienen sentencia.'}
+              {useRange && ' — Define el rango aceptado (quedan fuera los que están por debajo del mínimo o por encima del máximo).'}
+              {id === '2' && (
+                <p className="indicador-escala-ref">
+                  Referencia: 0 = analfabeto; 2 = secundaria completa; 4 = técnica completa; 5 = bachiller completo; 10 = maestría; 20 = doctorado.
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              className="indicador-info-btn indicador-info-btn-page"
+              onClick={() => setInfoIndicadorId(id)}
+              aria-label={`Información: ${title}`}
+              title={`Información: ${title}`}
+            >
+              i
+            </button>
           </div>
+          {id === '3' && (
+            <p className="indicador-ejemplo">
+              Ejemplo: si un partido muestra 5, significa que 5 candidatos de ese partido declararon ingreso S/ 0.00 en sus declaraciones juradas.
+            </p>
+          )}
+          {id === '5' && (
+            <p className="indicador-ejemplo">
+              100: #PorEstosNo.
+              <br />
+              Mientras más bajo el número menos candidatos estan asociados a #PorEstosNo.
+              <br />
+              Con excepción al <b>FREPAP</b>, todos tienen algún candidato con historial político en alguno de los partidos de <b>#PorEstosNo</b>.
+            </p>
+          )}
+          {id === '7' && (
+            <p className="indicador-ejemplo">
+              Se requiere una lista de 30 candidatos, pero hay partidos que no han podido completar el cuadro y presentan listas incompletas, lo cual reduce su capacidad de participación en el Senado. Es como ir a un partido de 11 con 9 jugadores.
+            </p>
+          )}
           {useRange ? (
             <div className="indicador-rango-fila">
               <div className="indicador-slider-wrap">
@@ -131,7 +170,7 @@ export default function Indicador() {
           ) : (
             <div className="indicador-slider-wrap">
               <label className="indicador-slider-label" htmlFor={`umbral-${id}`}>
-                Tu umbral: {formatValue(umbral, meta.unit)}
+                Tu umbral (cuánto toleras): {formatValue(umbral, meta.unit)}{id === '3' ? ' — Candidatos sin declarar ingresos' : id === '6' ? ' — Congresistas actuales que buscan ser senadores' : id === '7' ? ' — Candidatos hábiles al Senado Nacional' : ''}
               </label>
               <input
                 id={`umbral-${id}`}

@@ -11,14 +11,14 @@ export default function Inicio() {
     <>
       <Helmet>
         <title>Por qué sí — Indicadores por partido</title>
-        <meta name="description" content="Explorá partidos políticos según indicadores: sentencias, preparación, ingresos. Mové la raya roja en cada indicador y quedate con los que pasan tu filtro." />
+        <meta name="description" content="Explora partidos políticos según indicadores: sentencias, preparación, ingresos. Mueve la raya roja en cada indicador y quédate con los que pasan tu filtro." />
       </Helmet>
       <div className="page">
         <h1>Por qué sí</h1>
         <p>
           Herramienta informativa para explorar partidos según indicadores. En cada pantalla
           mueve la <strong>raya roja</strong> según tu criterio: los partidos que no pasen
-          quedarán en gris en las siguientes y al final podés ver cuáles cumplen todos.
+          quedarán en gris en las siguientes y al final puedes ver cuáles cumplen todos.
         </p>
         <div className="card">
           <div className="inicio-actions">

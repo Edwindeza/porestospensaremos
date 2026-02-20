@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
 import { TITLES, getModalTexto } from '../data/indicadorInfo'
@@ -7,10 +6,10 @@ const INDICADORES = [
   { id: '1', label: 'I1 Sentencias' },
   { id: '2', label: 'I2 Preparación' },
   { id: '3', label: 'I3 Ingresos cero' },
-  { id: '4b', label: 'I4b Ingresos efectivos' },
-  { id: '5', label: 'I5 Infiltración' },
+  { id: '4b', label: 'I4 Ingresos efectivos' },
+  { id: '5', label: 'I5 Historial asociado #PorEstosNo' },
   { id: '6', label: 'I6 Reelección' },
-  { id: '7', label: 'I7 Candidatos' },
+  { id: '7', label: 'I7 Candidatos hábiles' },
   { id: '8', label: 'I8 REINFO' },
 ]
 
@@ -23,7 +22,8 @@ export default function Layout({ children }) {
   const totalPartidos = indicadores?.partidos?.length ?? 0
   const tachados = descartadosTotal?.size ?? 0
   const restantes = totalPartidos - tachados
-  const [infoIndicadorId, setInfoIndicadorId] = useState(null)
+  const infoIndicadorId = useDataStore((s) => s.infoIndicadorId)
+  const setInfoIndicadorId = useDataStore((s) => s.setInfoIndicadorId)
 
   const pasoActual = PASOS.indexOf(location.pathname)
   const tieneAnterior = pasoActual > 0
@@ -42,7 +42,7 @@ export default function Layout({ children }) {
       {/* Barra superior: solo logo. Botones y contador van en la barra inferior */}
       <header className="app-topbar">
         <Link to="/" className="app-logo">
-          Por qué sí
+          #PorEstosSi — indicadores por partido — SENADO NACIONAL 2026
         </Link>
       </header>
 
@@ -145,11 +145,18 @@ export default function Layout({ children }) {
               {getModalTexto(infoIndicadorId)
                 .split(/\n\n+/)
                 .filter((p) => p.trim())
-                .map((block, i) => (
-                  <p key={i} className={block.startsWith('PR —') || block.startsWith('SE —') || block.startsWith('ETC —') || block.startsWith('ENU —') || block.startsWith('EU —') || block.startsWith('EPM —') || block.startsWith('EPD —') ? 'modal-texto-item' : ''}>
-                    {block}
-                  </p>
-                ))}
+                .map((block, i) => {
+                  const boldPhrase = 'sin considerar los que declararon S/ 0 ni valores máximos extremos'
+                  const parts = block.split(boldPhrase)
+                  const content = parts.length === 2
+                    ? <>{parts[0]}<strong>{boldPhrase}</strong>{parts[1]}</>
+                    : block
+                  return (
+                    <p key={i} className={block.startsWith('PR —') || block.startsWith('SE —') || block.startsWith('ETC —') || block.startsWith('ENU —') || block.startsWith('EU —') || block.startsWith('EPM —') || block.startsWith('EPD —') ? 'modal-texto-item' : ''}>
+                      {content}
+                    </p>
+                  )
+                })}
             </div>
           </div>
         </div>

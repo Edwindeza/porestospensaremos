@@ -74,6 +74,8 @@ export const useDataStore = create((set) => ({
   umbrales: getStoredUmbrales(),
   descartadosPorIndicador: {},
   descartadosTotal: new Set(),
+  infoIndicadorId: null,
+  setInfoIndicadorId: (id) => set({ infoIndicadorId: id }),
 
   loadData: async () => {
     try {
