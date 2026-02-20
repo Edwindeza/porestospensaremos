@@ -1,0 +1,19 @@
+{
+  "dimensiones": [
+    "Sin Sentencias",
+    "Preparación",
+    "Ingresos Nulos",
+    "Ingresos Efectivos",
+    "Libre del Pacto",
+    "Sin Reelección",
+    "Equipo Completo"
+  ],
+  "escala": { "min": 0, "max": 100 },
+  "referencias": {
+    "Preparación": "Max 8.41",
+    "Ingresos Efectivos": "Max 20,119"
+  },
+  "partidos": {
+    "Renovación Popular": [83, 69, 77, 68, 0, 93, 97]
+  }
+}

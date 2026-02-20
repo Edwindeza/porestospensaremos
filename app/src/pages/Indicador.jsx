@@ -1,0 +1,136 @@
+import { Helmet } from 'react-helmet-async'
+import { useParams, Link } from 'react-router-dom'
+import { useDataStore } from '../store/useDataStore'
+import { TITLES } from '../data/indicadorInfo'
+
+function formatValue(value, unit) {
+  if (value == null || Number.isNaN(value)) return '—'
+  if (unit === 'S/') return `S/ ${Number(value).toLocaleString('es-PE')}`
+  if (typeof value === 'number' && value % 1 !== 0) return value.toFixed(2)
+  return String(value)
+}
+
+export default function Indicador() {
+  const { id } = useParams()
+  const indicadores = useDataStore((s) => s.indicadores)
+  const umbrales = useDataStore((s) => s.umbrales)
+  const setUmbral = useDataStore((s) => s.setUmbral)
+  const descartadosPorIndicador = useDataStore((s) => s.descartadosPorIndicador)
+  const descartadosTotal = useDataStore((s) => s.descartadosTotal)
+  const title = TITLES[id] || `Indicador ${id}`
+
+  if (!indicadores) {
+    return (
+      <>
+        <Helmet><title>{title} — Por qué sí</title></Helmet>
+        <div className="page">
+          <h1>{title}</h1>
+          <div className="card"><p>Cargando datos…</p></div>
+          <p className="page-links"><Link to="/" className="btn btn-secondary">Volver al inicio</Link></p>
+        </div>
+      </>
+    )
+  }
+
+  const meta = indicadores.meta?.[id]
+  const valuesKey = id === '4b' ? 'i4b' : `i${id}`
+  const values = indicadores[valuesKey] || {}
+  const partidos = indicadores.partidos || []
+
+  if (!meta) {
+    return (
+      <>
+        <Helmet><title>{title} — Por qué sí</title></Helmet>
+        <div className="page">
+          <h1>{title}</h1>
+          <div className="card"><p>Indicador no encontrado.</p></div>
+          <p className="page-links"><Link to="/" className="btn btn-secondary">Volver al inicio</Link></p>
+        </div>
+      </>
+    )
+  }
+
+  const min = meta.min ?? 0
+  const max = meta.max ?? 100
+  const range = max - min || 1
+  /* Umbral por defecto solo de este indicador: nadie tachado (max si higherIsBetter false, min si true) */
+  const defaultUmbral = meta.higherIsBetter ? min : max
+  const umbral = umbrales[id] ?? defaultUmbral
+  const descartadosEste = new Set(descartadosPorIndicador[id] || [])
+
+  const filas = partidos
+    .map((nombre) => ({ nombre, valor: values[nombre] }))
+    .filter((f) => f.valor != null && !Number.isNaN(f.valor))
+    .sort((a, b) => (b.valor - a.valor))
+
+  return (
+    <>
+      <Helmet>
+        <title>{title} — Por qué sí</title>
+        <meta name="description" content={title} />
+      </Helmet>
+      <div className="page page-indicador">
+        <div className="indicador-derecha">
+        <div className="card indicador-card">
+          <div className="indicador-escala">
+            {title}. Escala de este indicador: {formatValue(min, meta.unit)} a {formatValue(max, meta.unit)}
+          </div>
+          <div className="indicador-slider-wrap">
+            <label className="indicador-slider-label" htmlFor={`umbral-${id}`}>
+              Tu umbral: {formatValue(umbral, meta.unit)}
+            </label>
+            <input
+              id={`umbral-${id}`}
+              type="range"
+              className="indicador-slider"
+              min={min}
+              max={max}
+              step={id === '4b' || id === '2' || id === '8' ? (max - min) / 200 : 1}
+              value={Number(umbral)}
+              onChange={(e) => setUmbral(id, e.target.value)}
+              aria-label={`Umbral ${meta.label}`}
+            />
+          </div>
+
+          <figure className="indicador-barras" aria-label={`Gráfico de barras: ${meta.label}`}>
+            {filas.map(({ nombre, valor }) => {
+              const descartado = descartadosEste.has(nombre)
+              const descartadoOtro = descartadosTotal.has(nombre) && !descartado
+              const pct = Math.min(100, Math.max(0, ((valor - min) / range) * 100))
+              let clase = 'indicador-barra'
+              if (descartado) clase += ' descartado'
+              else if (descartadoOtro) clase += ' descartado-otro'
+              else clase += ' siguen'
+              return (
+                <div key={nombre} className="indicador-fila">
+                  <span className="indicador-nombre" title={nombre}>
+                    {nombre}
+                  </span>
+                  <div className="indicador-barra-wrap">
+                    <div
+                      className={clase}
+                      style={{ width: `${pct}%` }}
+                      title={`${nombre}: ${formatValue(valor, meta.unit)}`}
+                    />
+                    <span className="indicador-valor">{formatValue(valor, meta.unit)}</span>
+                  </div>
+                </div>
+              )
+            })}
+          </figure>
+
+          <p className="indicador-leyenda">
+            <span className="indicador-leyenda-item"><span className="indicador-dot siguen" /> Siguen (pasan el umbral)</span>
+            <span className="indicador-leyenda-item"><span className="indicador-dot descartado" /> Tachados en este indicador</span>
+            <span className="indicador-leyenda-item"><span className="indicador-dot descartado-otro" /> Tachados en otro indicador</span>
+          </p>
+        </div>
+        </div>
+        <p className="page-links indicador-links">
+          <Link to="/" className="btn btn-secondary">Volver al inicio</Link>
+          <Link to="/ranking" className="btn">Ver ranking</Link>
+        </p>
+      </div>
+    </>
+  )
+}

@@ -1,0 +1,53 @@
+{
+  "pesos": {
+    "sentencias": 25,
+    "preparacion": 20,
+    "ingresosNulos": 10,
+    "ingresosEfectivos": 5,
+    "infiltracion": 25,
+    "reeleccion": 10,
+    "equipoCompleto": 5,
+    "total": 100
+  },
+  "escalas": {
+    "ranking35": { "min": 0, "max": 35, "descripcion": "Valor compuesto (escala 35)" },
+    "ranking100": { "min": 0, "max": 100, "descripcion": "Valor compuesto (100 es lo más óptimo)" }
+  },
+  "partidos": [
+    { "nombre": "Integridad Democrática", "valor35": 30.45, "valor100": 86.63 },
+    { "nombre": "Libertad Popular", "valor35": 29.95, "valor100": 90.64 },
+    { "nombre": "Fuerza y Libertad", "valor35": 26.9, "valor100": 84.23 },
+    { "nombre": "Ahora Nación", "valor35": 26.9, "valor100": 86.67 },
+    { "nombre": "PPP", "valor35": 26.06, "valor100": 83.21 },
+    { "nombre": "FREPAP", "valor35": 24.81, "valor100": 78.02 },
+    { "nombre": "Frente de la Esperanza", "valor35": 24.16, "valor100": 81.21 },
+    { "nombre": "Buen Gobierno", "valor35": 23.81, "valor100": 84.49 },
+    { "nombre": "PTE", "valor35": 23.61, "valor100": 79.31 },
+    { "nombre": "PRIN", "valor35": 23.06, "valor100": 78.89 },
+    { "nombre": "Pais para Todos", "valor35": 22.71, "valor100": 84.9 },
+    { "nombre": "Fe en el Peru", "valor35": 21.71, "valor100": 76.32 },
+    { "nombre": "APRA", "valor35": 20.86, "valor100": null },
+    { "nombre": "Un Camino Diferente", "valor35": 20.11, "valor100": null },
+    { "nombre": "Unidad Nacional", "valor35": 19.77, "valor100": 82.05 },
+    { "nombre": "Unido Perú", "valor35": 18.67, "valor100": 80.54 },
+    { "nombre": "Primero La Gente", "valor35": 18.07, "valor100": 80.3 },
+    { "nombre": "Si Creo", "valor35": 17.52, "valor100": 81.41 },
+    { "nombre": "Peru Acción", "valor35": 17.32, "valor100": 75.68 },
+    { "nombre": "Obras", "valor35": 16.57, "valor100": 75.39 },
+    { "nombre": "Venceremos", "valor35": 16.52, "valor100": null },
+    { "nombre": "Peru Primero", "valor35": 15.92, "valor100": 79.97 },
+    { "nombre": "Cooperación Popular", "valor35": null, "valor100": 74.81 },
+    { "nombre": "Progresemos", "valor35": null, "valor100": 73.23 },
+    { "nombre": "Peru Federal", "valor35": null, "valor100": 71.58 },
+    { "nombre": "Alianza para el Progreso", "valor35": null, "valor100": null },
+    { "nombre": "Avanza Pais", "valor35": null, "valor100": null },
+    { "nombre": "Fuerza Popular", "valor35": null, "valor100": null },
+    { "nombre": "Juntos por el Perú", "valor35": null, "valor100": null },
+    { "nombre": "Partido Morado", "valor35": null, "valor100": null },
+    { "nombre": "Peru Libre", "valor35": null, "valor100": null },
+    { "nombre": "Renovación Popular", "valor35": null, "valor100": null },
+    { "nombre": "Somos Perú", "valor35": null, "valor100": null },
+    { "nombre": "Verde", "valor35": null, "valor100": null },
+    { "nombre": "Podemos Perú", "valor35": 7.13, "valor100": 56 }
+  ]
+}
