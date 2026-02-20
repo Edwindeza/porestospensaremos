@@ -402,6 +402,12 @@ body {
   color: var(--color-border);
 }
 
+.app-footer-credit {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
 /* Responsive: sidebar abajo como nav horizontal */
 @media (max-width: 768px) {
   .app-body {
@@ -675,6 +681,28 @@ body {
   color: var(--color-text);
 }
 
+.modal-texto p {
+  margin: 0 0 var(--space-sm);
+}
+
+.modal-texto p:last-child {
+  margin-bottom: 0;
+}
+
+.modal-texto-item {
+  padding-left: 1.25em;
+  margin-top: 0.25em;
+  position: relative;
+}
+
+.modal-texto-item::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
 .page h1 {
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
@@ -866,6 +894,19 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
   font-size: 0.875rem;
   color: var(--color-text-muted);
   margin-bottom: var(--space-md);
+}
+
+.indicador-rango-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  align-items: flex-end;
+  margin-bottom: var(--space-xl);
+}
+
+.indicador-rango-fila .indicador-slider-wrap {
+  flex: 1 1 180px;
+  margin-bottom: 0;
 }
 
 .indicador-slider-wrap {

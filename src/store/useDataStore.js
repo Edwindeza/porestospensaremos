@@ -31,18 +31,30 @@ function computeDescartadosPorIndicador(indicadoresData, umbrales) {
   for (const id of Object.keys(indicadoresData.meta)) {
     const meta = indicadoresData.meta[id]
     const values = indicadoresData[valuesKey(id)] || {}
-    const umbral = umbrales[id]
-    if (umbral == null) {
-      out[id] = []
-      continue
+    const u = umbrales[id]
+    if (meta.rangeFilter) {
+      const min = u?.min ?? meta.min
+      const max = u?.max ?? meta.max
+      const descartados = partidos.filter((p) => {
+        const v = values[p]
+        if (v == null) return false
+        return v < min || v > max
+      })
+      out[id] = descartados
+    } else {
+      const umbral = u
+      if (umbral == null) {
+        out[id] = []
+        continue
+      }
+      const descartados = partidos.filter((p) => {
+        const v = values[p]
+        if (v == null) return false
+        if (meta.higherIsBetter) return v < umbral
+        return v > umbral
+      })
+      out[id] = descartados
     }
-    const descartados = partidos.filter((p) => {
-      const v = values[p]
-      if (v == null) return false
-      if (meta.higherIsBetter) return v < umbral
-      return v > umbral
-    })
-    out[id] = descartados
   }
   return out
 }
@@ -76,15 +88,21 @@ export const useDataStore = create((set) => ({
           for (const id of Object.keys(ind.meta)) {
             const meta = ind.meta[id]
             const valorGuardado = nextUmbrales[id]
-            // Valor por defecto: nadie tachado → higherIsBetter false → max; true → min
-            const valorPorDefecto = meta.higherIsBetter ? meta.min : meta.max
-            if (valorGuardado == null) {
-              nextUmbrales[id] = valorPorDefecto
-              changed = true
-            } else if (meta.higherIsBetter && valorGuardado === meta.max) {
-              // Migración: si estaba en max (tachaba a todos), pasar a min para que nadie tachado
-              nextUmbrales[id] = meta.min
-              changed = true
+            if (meta.rangeFilter) {
+              const def = { min: meta.min, max: meta.max }
+              if (valorGuardado == null || typeof valorGuardado !== 'object') {
+                nextUmbrales[id] = def
+                changed = true
+              }
+            } else {
+              const valorPorDefecto = meta.higherIsBetter ? meta.min : meta.max
+              if (valorGuardado == null) {
+                nextUmbrales[id] = valorPorDefecto
+                changed = true
+              } else if (meta.higherIsBetter && valorGuardado === meta.max) {
+                nextUmbrales[id] = meta.min
+                changed = true
+              }
             }
           }
         }
@@ -115,7 +133,9 @@ export const useDataStore = create((set) => ({
       const nextUmbrales = {}
       for (const id of Object.keys(ind.meta)) {
         const meta = ind.meta[id]
-        nextUmbrales[id] = meta.higherIsBetter ? meta.min : meta.max
+        nextUmbrales[id] = meta.rangeFilter
+          ? { min: meta.min, max: meta.max }
+          : (meta.higherIsBetter ? meta.min : meta.max)
       }
       const descartadosPorIndicador = computeDescartadosPorIndicador(ind, nextUmbrales)
       const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)
@@ -137,6 +157,22 @@ export const useDataStore = create((set) => ({
       } else {
         nextUmbrales[id] = num
       }
+      setStoredUmbrales(nextUmbrales)
+      const descartadosPorIndicador = computeDescartadosPorIndicador(state.indicadores, nextUmbrales)
+      const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)
+      return {
+        umbrales: nextUmbrales,
+        descartadosPorIndicador,
+        descartadosTotal,
+      }
+    })
+  },
+
+  /** Para indicadores con rangeFilter: actualiza cota mínima y máxima (quedan fuera los que están por debajo del mínimo o por encima del máximo). */
+  setUmbralRange: (id, min, max) => {
+    set((state) => {
+      const nextUmbrales = { ...state.umbrales }
+      nextUmbrales[id] = { min: Number(min), max: Number(max) }
       setStoredUmbrales(nextUmbrales)
       const descartadosPorIndicador = computeDescartadosPorIndicador(state.indicadores, nextUmbrales)
       const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)

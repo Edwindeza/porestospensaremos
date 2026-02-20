@@ -3,16 +3,19 @@
     "1": {
       "label": "Porcentaje de Candidatos Activos con Sentencia Firme",
       "min": 0,
-      "max": 30,
+      "max": 100,
       "higherIsBetter": false,
       "unit": "%"
     },
     "2": {
-      "label": "Índice de Preparación (0 a 24)",
+      "label": "Índice de Preparación (0 a 20)",
       "min": 0,
-      "max": 24,
+      "max": 20,
       "higherIsBetter": false,
-      "unit": ""
+      "unit": "",
+      "rangeFilter": true,
+      "rangeMinSlider": [0, 8],
+      "rangeMaxSlider": [8, 20]
     },
     "3": {
       "label": "Cantidad de Candidatos que han declarado ingreso S/ 0.00",
@@ -26,7 +29,8 @@
       "min": 0,
       "max": 25000,
       "higherIsBetter": false,
-      "unit": "S/"
+      "unit": "S/",
+      "rangeFilter": true
     },
     "5": {
       "label": "Índice de Infiltración de Partidos #PorEstosNo en Otros Partidos",
@@ -45,7 +49,7 @@
     "7": {
       "label": "Cantidad de Candidatos al Senado Nacional",
       "min": 0,
-      "max": 35,
+      "max": 30,
       "higherIsBetter": false,
       "unit": ""
     },

@@ -15,6 +15,7 @@ export default function Indicador() {
   const indicadores = useDataStore((s) => s.indicadores)
   const umbrales = useDataStore((s) => s.umbrales)
   const setUmbral = useDataStore((s) => s.setUmbral)
+  const setUmbralRange = useDataStore((s) => s.setUmbralRange)
   const descartadosPorIndicador = useDataStore((s) => s.descartadosPorIndicador)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const title = TITLES[id] || `Indicador ${id}`
@@ -53,9 +54,19 @@ export default function Indicador() {
   const min = meta.min ?? 0
   const max = meta.max ?? 100
   const range = max - min || 1
-  /* Umbral por defecto solo de este indicador: nadie tachado (max si higherIsBetter false, min si true) */
+  const useRange = !!meta.rangeFilter
   const defaultUmbral = meta.higherIsBetter ? min : max
-  const umbral = umbrales[id] ?? defaultUmbral
+  const defaultRange = { min, max }
+  const umbral = useRange ? undefined : (umbrales[id] ?? defaultUmbral)
+  const rangeVal = useRange ? (umbrales[id] && typeof umbrales[id] === 'object' ? umbrales[id] : defaultRange) : null
+  const umbralMin = rangeVal ? rangeVal.min : undefined
+  const umbralMax = rangeVal ? rangeVal.max : undefined
+  const minSliderBounds = meta.rangeMinSlider || [min, max]
+  const maxSliderBounds = meta.rangeMaxSlider || [min, max]
+  const minSliderMin = minSliderBounds[0]
+  const minSliderMax = minSliderBounds[1]
+  const maxSliderMin = maxSliderBounds[0]
+  const maxSliderMax = maxSliderBounds[1]
   const descartadosEste = new Set(descartadosPorIndicador[id] || [])
 
   const filas = partidos
@@ -73,24 +84,68 @@ export default function Indicador() {
         <div className="indicador-derecha">
         <div className="card indicador-card">
           <div className="indicador-escala">
-            {title}. Escala de este indicador: {formatValue(min, meta.unit)} a {formatValue(max, meta.unit)}
+            {title}. Escala: {formatValue(min, meta.unit)} a {formatValue(max, meta.unit)}
+            {useRange && ' — Definí el rango aceptado (quedan fuera los que están por debajo del mínimo o por encima del máximo).'}
           </div>
-          <div className="indicador-slider-wrap">
-            <label className="indicador-slider-label" htmlFor={`umbral-${id}`}>
-              Tu umbral: {formatValue(umbral, meta.unit)}
-            </label>
-            <input
-              id={`umbral-${id}`}
-              type="range"
-              className="indicador-slider"
-              min={min}
-              max={max}
-              step={id === '4b' || id === '2' || id === '8' ? (max - min) / 200 : 1}
-              value={Number(umbral)}
-              onChange={(e) => setUmbral(id, e.target.value)}
-              aria-label={`Umbral ${meta.label}`}
-            />
-          </div>
+          {useRange ? (
+            <div className="indicador-rango-fila">
+              <div className="indicador-slider-wrap">
+                <label className="indicador-slider-label" htmlFor={`umbral-min-${id}`}>
+                  {meta.rangeMinSlider ? `Mín (${minSliderMin}–${minSliderMax}): ` : 'Mín: '}{formatValue(Math.min(minSliderMax, Math.max(minSliderMin, Number(umbralMin))), meta.unit)}
+                </label>
+                <input
+                  id={`umbral-min-${id}`}
+                  type="range"
+                  className="indicador-slider"
+                  min={minSliderMin}
+                  max={minSliderMax}
+                  step={id === '4b' ? (max - min) / 200 : 1}
+                  value={Math.min(minSliderMax, Math.max(minSliderMin, Number(umbralMin)))}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    setUmbralRange(id, v, Math.max(v, Number(umbralMax)))
+                  }}
+                  aria-label={`Cota mínima ${meta.label}`}
+                />
+              </div>
+              <div className="indicador-slider-wrap">
+                <label className="indicador-slider-label" htmlFor={`umbral-max-${id}`}>
+                  {meta.rangeMaxSlider ? `Máx (${maxSliderMin}–${maxSliderMax}): ` : 'Máx: '}{formatValue(Math.min(maxSliderMax, Math.max(maxSliderMin, Number(umbralMax))), meta.unit)}
+                </label>
+                <input
+                  id={`umbral-max-${id}`}
+                  type="range"
+                  className="indicador-slider"
+                  min={maxSliderMin}
+                  max={maxSliderMax}
+                  step={id === '4b' ? (max - min) / 200 : 1}
+                  value={Math.min(maxSliderMax, Math.max(maxSliderMin, Number(umbralMax)))}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    setUmbralRange(id, Math.min(v, Number(umbralMin)), v)
+                  }}
+                  aria-label={`Cota máxima ${meta.label}`}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="indicador-slider-wrap">
+              <label className="indicador-slider-label" htmlFor={`umbral-${id}`}>
+                Tu umbral: {formatValue(umbral, meta.unit)}
+              </label>
+              <input
+                id={`umbral-${id}`}
+                type="range"
+                className="indicador-slider"
+                min={min}
+                max={max}
+                step={id === '4b' || id === '2' || id === '8' ? (max - min) / 200 : 1}
+                value={Number(umbral)}
+                onChange={(e) => setUmbral(id, e.target.value)}
+                aria-label={`Umbral ${meta.label}`}
+              />
+            </div>
+          )}
 
           <figure className="indicador-barras" aria-label={`Gráfico de barras: ${meta.label}`}>
             {filas.map(({ nombre, valor }) => {
@@ -121,8 +176,7 @@ export default function Indicador() {
 
           <p className="indicador-leyenda">
             <span className="indicador-leyenda-item"><span className="indicador-dot siguen" /> Siguen (pasan el umbral)</span>
-            <span className="indicador-leyenda-item"><span className="indicador-dot descartado" /> Tachados en este indicador</span>
-            <span className="indicador-leyenda-item"><span className="indicador-dot descartado-otro" /> Tachados en otro indicador</span>
+            <span className="indicador-leyenda-item"><span className="indicador-dot descartado" /> Tachados (en este u otro indicador)</span>
           </p>
         </div>
         </div>

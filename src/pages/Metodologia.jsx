@@ -25,15 +25,15 @@ export default function Metodologia() {
 
         <section className="card metodologia-section">
           <h2>Indicadores (I1 a I8)</h2>
-          <p>Cada indicador mide un aspecto distinto. El usuario fija un umbral por indicador; los partidos que no lo cumplen se marcan como descartados (acumulados en todos los indicadores).</p>
+          <p>Cada indicador mide un aspecto distinto. El usuario fija un umbral (o un rango con dos cotas en I2 e I4b); los partidos que no lo cumplen se marcan como descartados (acumulados en todos los indicadores).</p>
           <ul className="metodologia-indicadores">
-            <li><strong>I1</strong> — Porcentaje de Candidatos Activos con Sentencia Firme.</li>
-            <li><strong>I2</strong> — Índice de Preparación (IP): escala por nivel educativo (fórmula IP = PR + SE + ETC + ENU + EU + EPM + EPD; 0 a 24).</li>
+            <li><strong>I1</strong> — Porcentaje de Candidatos Activos con Sentencia Firme (escala 0 a 100%).</li>
+            <li><strong>I2</strong> — Índice de Preparación (IP): escala por nivel educativo (0 a 20). Cota mínima 0–8 y cota máxima 8–20; quedan fuera los que están por debajo o por encima del rango.</li>
             <li><strong>I3</strong> — Cantidad de Candidatos que declararon ingreso S/ 0.</li>
-            <li><strong>I4b</strong> — Promedio de Ingreso Anual por Candidato (sin máx. ni reportes S/ 0).</li>
+            <li><strong>I4b</strong> — Promedio de Ingreso Anual por Candidato (sin máx. ni reportes S/ 0). Rango con dos cotas (mínima y máxima).</li>
             <li><strong>I5</strong> — Índice de Infiltración de Partidos #PorEstosNo en otros partidos (fórmula ponderada por posición en lista; 0–100%).</li>
             <li><strong>I6</strong> — Cantidad de Congresistas que buscan Reelección.</li>
-            <li><strong>I7</strong> — Cantidad de Candidatos al Senado Nacional.</li>
+            <li><strong>I7</strong> — Cantidad de Candidatos al Senado Nacional (escala 0 a 30; la cota va de izquierda a derecha).</li>
             <li><strong>I8</strong> — Índice de Presencia de Candidatos en REINFO.</li>
           </ul>
         </section>

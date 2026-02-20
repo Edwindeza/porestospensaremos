@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
-import { TITLES, TEXTO_INFO } from '../data/indicadorInfo'
+import { TITLES, getModalTexto } from '../data/indicadorInfo'
 
 const INDICADORES = [
   { id: '1', label: 'I1 Sentencias' },
@@ -141,7 +141,16 @@ export default function Layout({ children }) {
                 ×
               </button>
             </div>
-            <p className="modal-texto">{TEXTO_INFO}</p>
+            <div className="modal-texto">
+              {getModalTexto(infoIndicadorId)
+                .split(/\n\n+/)
+                .filter((p) => p.trim())
+                .map((block, i) => (
+                  <p key={i} className={block.startsWith('PR —') || block.startsWith('SE —') || block.startsWith('ETC —') || block.startsWith('ENU —') || block.startsWith('EU —') || block.startsWith('EPM —') || block.startsWith('EPD —') ? 'modal-texto-item' : ''}>
+                    {block}
+                  </p>
+                ))}
+            </div>
           </div>
         </div>
       )}
@@ -154,6 +163,9 @@ export default function Layout({ children }) {
           <Link to="/metodologia">Metodología</Link>
           <span className="app-footer-sep" aria-hidden="true"> · </span>
           <Link to="/privacidad">Privacidad</Link>
+        </p>
+        <p className="app-footer-credit">
+          Colectivo &quot;La Pelota en Nuestra Cancha&quot; — Grupo ciudadano que busca un voto informado, objetivo y responsable. Desarrollador de metodología.
         </p>
       </footer>
     </>
