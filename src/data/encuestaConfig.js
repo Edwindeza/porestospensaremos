@@ -7,7 +7,7 @@ export const ENCUESTA = [
   {
     id: '1',
     title: 'Indicador 1',
-    question: '¿Cuántos candidatos, de los 30 al Senado Nacional, acepta con sentencia firme?',
+    question: '¿Cuántos candidatos, de los 30 al Senado Nacional, son aceptables con *sentencia firme*?',
     type: 'radio',
     options: [
       { value: 'A', label: 'A) Ninguno', umbral: 0 },
@@ -21,11 +21,12 @@ export const ENCUESTA = [
     title: 'Indicador 2',
     question: '¿Qué nivel de preparación, como grupo, espera de los candidatos al Senado Nacional?',
     type: 'radio',
+    // Escala 0–20: aceptamos partidos con índice >= mínimo (referencia: secundaria≈2, técnico≈4, bachiller≈5–8, posgrado≈12+)
     options: [
-      { value: 'A', label: 'A) Por lo menos secundaria completa', umbral: { min: 0, max: 20 } },
+      { value: 'A', label: 'A) Por lo menos secundaria completa', umbral: { min: 2, max: 20 } },
       { value: 'B', label: 'B) Por lo menos técnico completo', umbral: { min: 4, max: 20 } },
-      { value: 'C', label: 'C) Por lo menos bachiller completo', umbral: { min: 8, max: 20 } },
-      { value: 'D', label: 'D) Con al menos la mitad con bachiller completo y estudios de posgrado', umbral: { min: 12, max: 20 } },
+      { value: 'C', label: 'C) Por lo menos bachiller completo', umbral: { min: 5, max: 20 } },
+      { value: 'D', label: 'D) Con al menos la mitad con bachiller completo y estudios de posgrado', umbral: { min: 7, max: 20 } },
     ],
   },
   {
@@ -106,11 +107,23 @@ export const ENCUESTA = [
   },
 ]
 
-/** Aplica las respuestas de la encuesta al store (setUmbral / setUmbralRange). */
-export function applyEncuestaToStore(answers, setUmbral, setUmbralRange) {
+/** Devuelve umbral "acepta todos" para un indicador según su meta. */
+function defaultUmbralForMeta(meta) {
+  if (meta.rangeFilter) return { min: meta.min, max: meta.max }
+  return meta.higherIsBetter ? meta.min : meta.max
+}
+
+/** Construye el objeto umbrales completo: por defecto "acepta todos" y solo los indicadores respondidos se aplican. Así no arrastramos filtros viejos de otros indicadores. */
+export function buildUmbralesFromEncuesta(answers, meta) {
+  if (!meta || typeof meta !== 'object') return {}
+  const next = {}
+  for (const id of Object.keys(meta)) {
+    next[id] = defaultUmbralForMeta(meta[id])
+  }
   for (const block of ENCUESTA) {
     const ans = answers[block.id]
-    if (ans == null) continue
+    if (ans == null || ans === '') continue
+    if (Array.isArray(ans) && ans.length === 0) continue
     if (block.type === 'checkbox') {
       const selected = Array.isArray(ans) ? ans : [ans]
       if (selected.length === 0) continue
@@ -118,17 +131,18 @@ export function applyEncuestaToStore(answers, setUmbral, setUmbralRange) {
       if (opts.length === 0) continue
       const mins = opts.map((o) => o.umbral.min)
       const maxs = opts.map((o) => o.umbral.max)
-      let min = Math.min(...mins)
-      let max = Math.max(...maxs)
-      setUmbralRange(block.id, min, max)
+      next[block.id] = { min: Math.min(...mins), max: Math.max(...maxs) }
     } else {
       const opt = block.options.find((o) => o.value === ans)
       if (!opt) continue
-      if (typeof opt.umbral === 'object') {
-        setUmbralRange(block.id, opt.umbral.min, opt.umbral.max)
-      } else {
-        setUmbral(block.id, opt.umbral)
-      }
+      next[block.id] = typeof opt.umbral === 'object' ? { ...opt.umbral } : opt.umbral
     }
   }
+  return next
+}
+
+/** Aplica las respuestas de la encuesta al store. Usa buildUmbralesFromEncuesta + setUmbralesFromEncuesta para que los indicadores no respondidos queden en "acepta todos" y no se arrastren filtros viejos. */
+export function applyEncuestaToStore(answers, meta, setUmbralesFromEncuesta) {
+  const next = buildUmbralesFromEncuesta(answers, meta)
+  if (Object.keys(next).length > 0) setUmbralesFromEncuesta(next)
 }

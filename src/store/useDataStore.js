@@ -1,10 +1,29 @@
 import { create } from 'zustand'
 
 const STORAGE_KEY = 'porquiensi_umbrales'
+const MODO_KEY = 'porquiensi_modo'
+
+const storage = typeof sessionStorage !== 'undefined' ? sessionStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+
+function getStoredModo() {
+  try {
+    const m = storage.getItem(MODO_KEY)
+    if (m === 'encuesta' || m === 'intervalo') return m
+    return 'encuesta'
+  } catch {
+    return 'encuesta'
+  }
+}
+
+function setStoredModo(modo) {
+  try {
+    storage.setItem(MODO_KEY, modo)
+  } catch (_) {}
+}
 
 function getStoredUmbrales() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = storage.getItem(STORAGE_KEY)
     if (!raw) return {}
     const parsed = JSON.parse(raw)
     return typeof parsed === 'object' && parsed !== null ? parsed : {}
@@ -15,7 +34,14 @@ function getStoredUmbrales() {
 
 function setStoredUmbrales(obj) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj))
+    storage.setItem(STORAGE_KEY, JSON.stringify(obj))
+  } catch (_) {}
+}
+
+function clearStored() {
+  try {
+    storage.removeItem(STORAGE_KEY)
+    storage.removeItem(MODO_KEY)
   } catch (_) {}
 }
 
@@ -76,6 +102,34 @@ export const useDataStore = create((set) => ({
   descartadosTotal: new Set(),
   encuestaRespuestas: null,
   setEncuestaRespuestas: (answers) => set({ encuestaRespuestas: answers }),
+  modo: getStoredModo(),
+  setModo: (modo) => {
+    if (modo !== 'encuesta' && modo !== 'intervalo') return
+    clearStored()
+    setStoredModo(modo)
+    set((state) => {
+      const ind = state.indicadores
+      if (!ind?.meta) {
+        return { modo, umbrales: {}, descartadosPorIndicador: {}, descartadosTotal: new Set(), encuestaRespuestas: null }
+      }
+      const nextUmbrales = {}
+      for (const id of Object.keys(ind.meta)) {
+        const meta = ind.meta[id]
+        nextUmbrales[id] = meta.rangeFilter
+          ? { min: meta.min, max: meta.max }
+          : (meta.higherIsBetter ? meta.min : meta.max)
+      }
+      const descartadosPorIndicador = computeDescartadosPorIndicador(ind, nextUmbrales)
+      const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)
+      return {
+        modo,
+        umbrales: nextUmbrales,
+        descartadosPorIndicador,
+        descartadosTotal,
+        encuestaRespuestas: null,
+      }
+    })
+  },
   infoIndicadorId: null,
   setInfoIndicadorId: (id) => set({ infoIndicadorId: id }),
 
@@ -178,6 +232,20 @@ export const useDataStore = create((set) => ({
     set((state) => {
       const nextUmbrales = { ...state.umbrales }
       nextUmbrales[id] = { min: Number(min), max: Number(max) }
+      setStoredUmbrales(nextUmbrales)
+      const descartadosPorIndicador = computeDescartadosPorIndicador(state.indicadores, nextUmbrales)
+      const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)
+      return {
+        umbrales: nextUmbrales,
+        descartadosPorIndicador,
+        descartadosTotal,
+      }
+    })
+  },
+
+  /** Reemplaza todos los umbrales (p. ej. desde la encuesta). Los no incluidos en el objeto se dejan como estaban; para "reiniciar" los no respondidos se debe pasar el objeto completo (buildUmbralesFromEncuesta). */
+  setUmbralesFromEncuesta: (nextUmbrales) => {
+    set((state) => {
       setStoredUmbrales(nextUmbrales)
       const descartadosPorIndicador = computeDescartadosPorIndicador(state.indicadores, nextUmbrales)
       const descartadosTotal = computeDescartadosTotal(descartadosPorIndicador)

@@ -1,20 +1,24 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
 import { ENCUESTA, applyEncuestaToStore } from '../data/encuestaConfig'
+import { TITLES, getModalTexto } from '../data/indicadorInfo'
 
 export default function Encuesta() {
   const navigate = useNavigate()
   const loadData = useDataStore((s) => s.loadData)
-  const setUmbral = useDataStore((s) => s.setUmbral)
-  const setUmbralRange = useDataStore((s) => s.setUmbralRange)
   const setEncuestaRespuestas = useDataStore((s) => s.setEncuestaRespuestas)
   const indicadores = useDataStore((s) => s.indicadores)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const totalPartidos = indicadores?.partidos?.length ?? 0
   const tachados = descartadosTotal?.size ?? 0
   const restantes = totalPartidos - tachados
+  const infoIndicadorId = useDataStore((s) => s.infoIndicadorId)
+  const setInfoIndicadorId = useDataStore((s) => s.setInfoIndicadorId)
+  const setModo = useDataStore((s) => s.setModo)
+
+  useEffect(() => { setModo('encuesta') }, [setModo])
 
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState('next')
@@ -29,17 +33,19 @@ export default function Encuesta() {
 
   const goNext = useCallback(() => {
     loadData().then(() => {
-      applyEncuestaToStore(answers, setUmbral, setUmbralRange)
+      const { indicadores, setUmbralesFromEncuesta: setUmbrales } = useDataStore.getState()
+      applyEncuestaToStore(answers, indicadores?.meta, setUmbrales)
       setDirection('next')
       setStep((s) => s + 1)
     })
-  }, [answers, loadData, setUmbral, setUmbralRange])
+  }, [answers, loadData])
 
   const setAnswer = useCallback((id, value) => {
     const nextAnswers = { ...answers, [id]: value }
     setAnswers(nextAnswers)
     loadData().then(() => {
-      applyEncuestaToStore(nextAnswers, setUmbral, setUmbralRange)
+      const { indicadores, setUmbralesFromEncuesta: setUmbrales } = useDataStore.getState()
+      applyEncuestaToStore(nextAnswers, indicadores?.meta, setUmbrales)
       if (step === ENCUESTA.length - 1) {
         setEncuestaRespuestas(nextAnswers)
         navigate('/ranking')
@@ -48,12 +54,13 @@ export default function Encuesta() {
         setStep((s) => s + 1)
       }
     })
-  }, [answers, step, loadData, setUmbral, setUmbralRange, setEncuestaRespuestas, navigate])
+  }, [answers, step, loadData, setEncuestaRespuestas, navigate])
 
   /** Avanzar al siguiente ítem al hacer clic de nuevo en la opción ya seleccionada (onChange no se dispara en radios). */
   const advanceToNext = useCallback(() => {
     loadData().then(() => {
-      applyEncuestaToStore(answers, setUmbral, setUmbralRange)
+      const { indicadores, setUmbralesFromEncuesta: setUmbrales } = useDataStore.getState()
+      applyEncuestaToStore(answers, indicadores?.meta, setUmbrales)
       if (step === ENCUESTA.length - 1) {
         setEncuestaRespuestas(answers)
         navigate('/ranking')
@@ -62,7 +69,7 @@ export default function Encuesta() {
         setStep((s) => s + 1)
       }
     })
-  }, [answers, step, loadData, setUmbral, setUmbralRange, setEncuestaRespuestas, navigate])
+  }, [answers, step, loadData, setEncuestaRespuestas, navigate])
 
   const toggleCheckbox = useCallback((id, value) => {
     setAnswers((prev) => {
@@ -109,24 +116,30 @@ export default function Encuesta() {
           </div>
         </div>
 
-        {totalPartidos > 0 && restantes === 0 && (
-          <div className="encuesta-alert encuesta-alert--cero" role="alert">
-            <p className="encuesta-alert-text">
-              Tus tolerancias indican que no aceptas a ninguno, pero eso genera un voto nulo o blanco que favorece a los #PorEstosNo.
-            </p>
-            <p className="encuesta-alert-text">
-              Reconfigura tus tolerancias para ver qué partidos podrías aceptar.
-            </p>
-          </div>
-        )}
-
         <form className="encuesta-form" onSubmit={(e) => e.preventDefault()}>
           <div className={`encuesta-step-wrap encuesta-step-wrap--${direction}`} key={step}>
             {block && (
               <fieldset className="encuesta-block encuesta-step-block">
                 <legend className="encuesta-block-title">{block.title}</legend>
-                <p className="encuesta-question">{block.question}</p>
-                <div className="encuesta-options" role={block.type === 'radio' ? 'radiogroup' : undefined} aria-label={block.question}>
+                <div className="encuesta-question-wrap">
+                  <p className="encuesta-question">
+                    {typeof block.question === 'string'
+                      ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
+                          p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
+                        )
+                      : block.question}
+                  </p>
+                  <button
+                    type="button"
+                    className="indicador-info-btn indicador-info-btn-encuesta"
+                    onClick={() => setInfoIndicadorId(block.id)}
+                    aria-label={`Información: ${block.title}`}
+                    title={`Información: ${block.title}`}
+                  >
+                    i
+                  </button>
+                </div>
+                <div className="encuesta-options" role={block.type === 'radio' ? 'radiogroup' : undefined} aria-label={typeof block.question === 'string' ? block.question.replace(/\*[^*]+\*/g, (m) => m.slice(1, -1)) : block.question}>
                   {block.type === 'radio' &&
                     block.options.map((opt) => (
                       <label
@@ -182,6 +195,42 @@ export default function Encuesta() {
           )}
         </form>
       </div>
+
+      {infoIndicadorId && (
+        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titulo-encuesta">
+          <div className="modal-backdrop" onClick={() => setInfoIndicadorId(null)} aria-hidden="true" />
+          <div className="modal-caja">
+            <div className="modal-cabecera">
+              <h2 id="modal-titulo-encuesta" className="modal-titulo">{TITLES[infoIndicadorId] || `Indicador ${infoIndicadorId}`}</h2>
+              <button
+                type="button"
+                className="modal-cerrar"
+                onClick={() => setInfoIndicadorId(null)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-texto">
+              {getModalTexto(infoIndicadorId)
+                .split(/\n\n+/)
+                .filter((p) => p.trim())
+                .map((textBlock, i) => {
+                  const boldPhrase = 'sin considerar los que declararon S/ 0 ni valores máximos extremos'
+                  const parts = textBlock.split(boldPhrase)
+                  const content = parts.length === 2
+                    ? <>{parts[0]}<strong>{boldPhrase}</strong>{parts[1]}</>
+                    : textBlock
+                  return (
+                    <p key={i} className={textBlock.startsWith('PR —') || textBlock.startsWith('SE —') || textBlock.startsWith('ETC —') || textBlock.startsWith('ENU —') || textBlock.startsWith('EU —') || textBlock.startsWith('EPM —') || textBlock.startsWith('EPD —') ? 'modal-texto-item' : ''}>
+                      {content}
+                    </p>
+                  )
+                })}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

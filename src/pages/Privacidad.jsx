@@ -6,15 +6,16 @@ export default function Privacidad() {
     <>
       <Helmet>
         <title>Privacidad — #PorEstosSi</title>
-        <meta name="description" content="Solo usamos almacenamiento local (localStorage). No recopilamos datos personales ni usamos cookies de seguimiento." />
+        <meta name="description" content="Solo usamos almacenamiento de sesión (sessionStorage). No recopilamos datos personales ni usamos cookies de seguimiento." />
       </Helmet>
       <div className="page">
         <h1>Privacidad</h1>
         <div className="card">
           <p style={{ marginTop: 0 }}>
-            Solo usamos el <strong>almacenamiento local</strong> de tu navegador (localStorage)
-            para guardar los umbrales que eliges en cada indicador y qué partidos quedaron
-            descartados. Así puedes cerrar y volver más tarde sin perder tu progreso.
+            Solo usamos el <strong>almacenamiento de sesión</strong> de tu navegador (sessionStorage)
+            para guardar los umbrales que eliges en cada indicador y el modo (encuesta o intervalo).
+            Los datos se borran al cerrar la pestaña o ventana, y también al cambiar de modo
+            (encuesta ↔ intervalo).
           </p>
           <p style={{ marginBottom: 0 }}>
             No recopilamos datos personales, no usamos cookies de seguimiento y no enviamos

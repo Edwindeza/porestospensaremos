@@ -525,6 +525,34 @@ body {
   margin: 0;
 }
 
+.app-footer-modos {
+  margin-bottom: var(--space-xs);
+}
+
+.app-footer-label {
+  margin-right: var(--space-xs);
+}
+
+.app-footer-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.app-footer-link-btn:hover {
+  text-decoration: underline;
+}
+
+.app-footer-mode-active {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
 .app-footer-line a {
   color: var(--color-accent);
   font-weight: 500;
@@ -733,6 +761,33 @@ body {
   color: var(--color-text-muted);
 }
 
+.encuesta-layout-footer-modos {
+  margin-bottom: var(--space-sm);
+}
+
+.encuesta-layout-footer-label {
+  margin-right: var(--space-xs);
+}
+
+.encuesta-layout-mode-active {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.encuesta-layout-mode-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.encuesta-layout-mode-btn:hover {
+  color: var(--color-accent-hover);
+}
+
 .encuesta-layout-footer-credit {
   margin: 0;
   font-size: 0.8rem;
@@ -915,6 +970,28 @@ body {
   font-weight: 600;
   margin: 0 0 var(--space-sm);
   color: var(--color-accent);
+}
+
+.encuesta-question-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.encuesta-question-wrap .encuesta-question {
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+}
+
+.indicador-info-btn-encuesta {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  font-size: 0.875rem;
 }
 
 .encuesta-question {
@@ -1628,12 +1705,27 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
 
 .ranking-tabs {
   display: flex;
+  flex-wrap: nowrap;
   gap: 0;
   margin-bottom: var(--space-md);
   border-bottom: 2px solid var(--color-border);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 767.98px) {
+  .ranking-tabs {
+    margin-left: calc(-1 * var(--container-gutter));
+    margin-right: calc(-1 * var(--container-gutter));
+    padding-left: var(--container-gutter);
+    padding-right: var(--container-gutter);
+  }
 }
 
 .ranking-tab {
+  flex: 0 0 auto;
   padding: var(--space-sm) var(--space-lg);
   font-size: 1rem;
   font-weight: 600;
@@ -1645,6 +1737,7 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
   cursor: pointer;
   font-family: inherit;
   transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
 }
 
 .ranking-tab:hover {

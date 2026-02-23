@@ -227,7 +227,13 @@ export default function Ranking() {
                   return (
                     <li key={block.id} className="ranking-respuestas-item">
                       <span className="ranking-respuestas-title">{block.title}</span>
-                      <p className="ranking-respuestas-question">{block.question}</p>
+                      <p className="ranking-respuestas-question">
+                      {typeof block.question === 'string'
+                        ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
+                            p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
+                          )
+                        : block.question}
+                    </p>
                       <p className="ranking-respuestas-answer">{labels.join(', ')}</p>
                     </li>
                   )

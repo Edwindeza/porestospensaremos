@@ -1,11 +1,15 @@
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
 
 export default function Inicio() {
   const reiniciar = useDataStore((s) => s.reiniciar)
+  const setModo = useDataStore((s) => s.setModo)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const hayAlgoQueLimpiar = descartadosTotal?.size > 0
+
+  useEffect(() => { setModo('intervalo') }, [setModo])
 
   return (
     <>
@@ -22,14 +26,11 @@ export default function Inicio() {
         </p>
         <div className="card">
           <div className="inicio-actions">
-            <Link to="/" className="btn">
-              Prefiero responder la encuesta (más rápido)
-            </Link>
-            <Link to="/umbrales/indicador/1" className="btn">
+            <Link to="/intervalos/indicador/1" className="btn">
               Comenzar por Indicador 1 (Sentencias)
             </Link>
             <Link to="/ranking" className="btn btn-secondary">
-              Ver tablas de ranking (1–35 y sobre 100)
+              Ver ranking
             </Link>
           </div>
           {hayAlgoQueLimpiar && (

@@ -28,7 +28,7 @@ export default function Indicador() {
         <div className="page">
           <h1>{title}</h1>
           <div className="card"><p>Cargando datos…</p></div>
-          <p className="page-links"><Link to="/umbrales" className="btn btn-secondary">Volver a umbrales</Link></p>
+          <p className="page-links"><Link to="/intervalos" className="btn btn-secondary">Volver a intervalos</Link></p>
         </div>
       </>
     )
@@ -46,7 +46,7 @@ export default function Indicador() {
         <div className="page">
           <h1>{title}</h1>
           <div className="card"><p>Indicador no encontrado.</p></div>
-          <p className="page-links"><Link to="/umbrales" className="btn btn-secondary">Volver a umbrales</Link></p>
+          <p className="page-links"><Link to="/intervalos" className="btn btn-secondary">Volver a intervalos</Link></p>
         </div>
       </>
     )
@@ -219,10 +219,6 @@ export default function Indicador() {
           </p>
         </div>
         </div>
-        <p className="page-links indicador-links">
-          <Link to="/umbrales" className="btn btn-secondary">Volver a umbrales</Link>
-          <Link to="/ranking" className="btn">Ver ranking</Link>
-        </p>
       </div>
     </>
   )

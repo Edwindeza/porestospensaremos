@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
 import { TITLES, getModalTexto } from '../data/indicadorInfo'
 
@@ -13,10 +13,13 @@ const INDICADORES = [
   { id: '8', label: 'I8 REINFO' },
 ]
 
-const PASOS = ['/umbrales', '/umbrales/indicador/1', '/umbrales/indicador/2', '/umbrales/indicador/3', '/umbrales/indicador/4b', '/umbrales/indicador/5', '/umbrales/indicador/6', '/umbrales/indicador/7', '/umbrales/indicador/8', '/ranking']
+const PASOS = ['/intervalos', '/intervalos/indicador/1', '/intervalos/indicador/2', '/intervalos/indicador/3', '/intervalos/indicador/4b', '/intervalos/indicador/5', '/intervalos/indicador/6', '/intervalos/indicador/7', '/intervalos/indicador/8', '/ranking']
 
 export default function Layout({ children }) {
   const location = useLocation()
+  const navigate = useNavigate()
+  const modo = useDataStore((s) => s.modo)
+  const setModo = useDataStore((s) => s.setModo)
   const indicadores = useDataStore((s) => s.indicadores)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const totalPartidos = indicadores?.partidos?.length ?? 0
@@ -41,8 +44,8 @@ export default function Layout({ children }) {
 
       {/* Barra superior: solo logo. Botones y contador van en la barra inferior */}
       <header className="app-topbar">
-        <Link to="/" className="app-logo">
-          #PorEstosSi — encuesta y umbrales — SENADO NACIONAL 2026
+        <Link to="/intervalos" className="app-logo">
+          #PorEstosSi — indicadores por intervalos — SENADO NACIONAL 2026
         </Link>
       </header>
 
@@ -52,20 +55,15 @@ export default function Layout({ children }) {
           <nav className="app-nav-lateral">
             <ul className="app-nav-lateral-list">
               <li>
-                <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
-                  Encuesta
-                </Link>
-              </li>
-              <li>
-                <Link to="/umbrales" className={location.pathname === '/umbrales' ? 'active' : ''}>
-                  Por umbrales
+                <Link to="/intervalos" className={location.pathname === '/intervalos' ? 'active' : ''}>
+                  Inicio
                 </Link>
               </li>
               {INDICADORES.map(({ id, label }) => (
                 <li key={id} className="app-nav-indicador-item">
                   <Link
-                    to={`/umbrales/indicador/${id}`}
-                    className={location.pathname === `/umbrales/indicador/${id}` ? 'active' : ''}
+                    to={`/intervalos/indicador/${id}`}
+                    className={location.pathname === `/intervalos/indicador/${id}` ? 'active' : ''}
                   >
                     {label}
                   </Link>
@@ -168,6 +166,12 @@ export default function Layout({ children }) {
       )}
 
       <footer className="app-footer">
+        <p className="app-footer-line app-footer-modos">
+          <span className="app-footer-label">Cambiar de modo: </span>
+          <button type="button" className="app-footer-link-btn" onClick={() => { setModo('encuesta'); navigate('/') }}>
+            Modo encuesta
+          </button>
+        </p>
         <p className="app-footer-line">
           Herramienta informativa. Tus criterios se guardan solo en tu navegador.
           <br />
