@@ -5,7 +5,7 @@ export default function Metodologia() {
   return (
     <>
       <Helmet>
-        <title>Cómo se creó esta información — Por qué sí</title>
+        <title>Cómo se creó esta información — #PorEstosSi</title>
         <meta name="description" content="Metodología, fuentes (REINFO, tablas de sentencias), fórmulas de los indicadores y aviso: herramienta informativa, no propaganda." />
       </Helmet>
       <div className="page">

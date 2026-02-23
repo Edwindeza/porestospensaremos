@@ -10,19 +10,22 @@ export default function Inicio() {
   return (
     <>
       <Helmet>
-        <title>Por qué sí — Indicadores por partido</title>
+        <title>#PorEstosSi — Indicadores por partido</title>
         <meta name="description" content="Explora partidos políticos según indicadores: sentencias, preparación, ingresos. Mueve la raya roja en cada indicador y quédate con los que pasan tu filtro." />
       </Helmet>
       <div className="page">
-        <h1>Por qué sí</h1>
+        <h1>#PorEstosSi</h1>
         <p>
           Herramienta informativa para explorar partidos según indicadores. En cada pantalla
           mueve la <strong>raya roja</strong> según tu criterio: los partidos que no pasen
-          quedarán en gris en las siguientes y al final puedes ver cuáles cumplen todos.
+          quedarán en gris en las siguientes y al final puedes ver cuáles cumplen todos tus indicadores.
         </p>
         <div className="card">
           <div className="inicio-actions">
-            <Link to="/indicador/1" className="btn">
+            <Link to="/" className="btn">
+              Prefiero responder la encuesta (más rápido)
+            </Link>
+            <Link to="/umbrales/indicador/1" className="btn">
               Comenzar por Indicador 1 (Sentencias)
             </Link>
             <Link to="/ranking" className="btn btn-secondary">

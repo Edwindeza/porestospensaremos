@@ -13,7 +13,7 @@ const INDICADORES = [
   { id: '8', label: 'I8 REINFO' },
 ]
 
-const PASOS = ['/', '/indicador/1', '/indicador/2', '/indicador/3', '/indicador/4b', '/indicador/5', '/indicador/6', '/indicador/7', '/indicador/8', '/ranking']
+const PASOS = ['/umbrales', '/umbrales/indicador/1', '/umbrales/indicador/2', '/umbrales/indicador/3', '/umbrales/indicador/4b', '/umbrales/indicador/5', '/umbrales/indicador/6', '/umbrales/indicador/7', '/umbrales/indicador/8', '/ranking']
 
 export default function Layout({ children }) {
   const location = useLocation()
@@ -42,7 +42,7 @@ export default function Layout({ children }) {
       {/* Barra superior: solo logo. Botones y contador van en la barra inferior */}
       <header className="app-topbar">
         <Link to="/" className="app-logo">
-          #PorEstosSi — indicadores por partido — SENADO NACIONAL 2026
+          #PorEstosSi — encuesta y umbrales — SENADO NACIONAL 2026
         </Link>
       </header>
 
@@ -53,14 +53,19 @@ export default function Layout({ children }) {
             <ul className="app-nav-lateral-list">
               <li>
                 <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
-                  Inicio
+                  Encuesta
+                </Link>
+              </li>
+              <li>
+                <Link to="/umbrales" className={location.pathname === '/umbrales' ? 'active' : ''}>
+                  Por umbrales
                 </Link>
               </li>
               {INDICADORES.map(({ id, label }) => (
                 <li key={id} className="app-nav-indicador-item">
                   <Link
-                    to={`/indicador/${id}`}
-                    className={location.pathname === `/indicador/${id}` ? 'active' : ''}
+                    to={`/umbrales/indicador/${id}`}
+                    className={location.pathname === `/umbrales/indicador/${id}` ? 'active' : ''}
                   >
                     {label}
                   </Link>
@@ -84,7 +89,7 @@ export default function Layout({ children }) {
           </nav>
         </aside>
 
-        <main id="main" className="app-main">
+        <main id="main" className="app-main container">
           {children}
         </main>
       </div>

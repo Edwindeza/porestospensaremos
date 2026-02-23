@@ -5,7 +5,7 @@ export default function Privacidad() {
   return (
     <>
       <Helmet>
-        <title>Privacidad — Por qué sí</title>
+        <title>Privacidad — #PorEstosSi</title>
         <meta name="description" content="Solo usamos almacenamiento local (localStorage). No recopilamos datos personales ni usamos cookies de seguimiento." />
       </Helmet>
       <div className="page">

@@ -74,6 +74,8 @@ export const useDataStore = create((set) => ({
   umbrales: getStoredUmbrales(),
   descartadosPorIndicador: {},
   descartadosTotal: new Set(),
+  encuestaRespuestas: null,
+  setEncuestaRespuestas: (answers) => set({ encuestaRespuestas: answers }),
   infoIndicadorId: null,
   setInfoIndicadorId: (id) => set({ infoIndicadorId: id }),
 
@@ -130,7 +132,7 @@ export const useDataStore = create((set) => ({
     set((state) => {
       const ind = state.indicadores
       if (!ind?.meta) {
-        return { umbrales: {}, descartadosPorIndicador: {}, descartadosTotal: new Set() }
+        return { umbrales: {}, descartadosPorIndicador: {}, descartadosTotal: new Set(), encuestaRespuestas: null }
       }
       const nextUmbrales = {}
       for (const id of Object.keys(ind.meta)) {
@@ -145,6 +147,7 @@ export const useDataStore = create((set) => ({
         umbrales: nextUmbrales,
         descartadosPorIndicador,
         descartadosTotal,
+        encuestaRespuestas: null,
       }
     })
   },

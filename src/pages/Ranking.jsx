@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
+import { ENCUESTA } from '../data/encuestaConfig'
 
 function formatValor(v) {
   if (v == null || (typeof v === 'number' && Number.isNaN(v))) return '—'
@@ -9,19 +10,21 @@ function formatValor(v) {
 }
 
 export default function Ranking() {
+  const navigate = useNavigate()
   const [tabActivo, setTabActivo] = useState('ranking')
   const ranking = useDataStore((s) => s.ranking)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const reiniciar = useDataStore((s) => s.reiniciar)
+  const encuestaRespuestas = useDataStore((s) => s.encuestaRespuestas)
 
   if (!ranking) {
     return (
       <>
-        <Helmet><title>Ranking de partidos — Por qué sí</title></Helmet>
+        <Helmet><title>Ranking de partidos — #PorEstosSi</title></Helmet>
         <div className="page">
           <h1>Ranking de partidos</h1>
           <div className="card"><p>Cargando datos…</p></div>
-          <p className="page-links"><Link to="/" className="btn btn-secondary">Volver al inicio</Link></p>
+          <p className="page-links"><button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>Ir a encuesta</button></p>
         </div>
       </>
     )
@@ -50,7 +53,7 @@ export default function Ranking() {
   return (
     <>
       <Helmet>
-        <title>Ranking de partidos — Por qué sí</title>
+        <title>Ranking de partidos — #PorEstosSi</title>
         <meta name="description" content="Tablas de valor compuesto: ranking 1–35 y porcentaje sobre 100. Partidos descartados en los indicadores se muestran en gris." />
       </Helmet>
       <div className="page">
@@ -83,6 +86,17 @@ export default function Ranking() {
             onClick={() => setTabActivo('porcentaje')}
           >
             Porcentaje
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActivo === 'respuestas'}
+            aria-controls="panel-respuestas"
+            id="tab-respuestas"
+            className={`ranking-tab ${tabActivo === 'respuestas' ? 'ranking-tab-activo' : ''}`}
+            onClick={() => setTabActivo('respuestas')}
+          >
+            Respuestas
           </button>
         </div>
 
@@ -176,14 +190,47 @@ export default function Ranking() {
         </div>
         )}
 
-        <p className="page-links">
-          <Link to="/" className="btn btn-secondary">Volver al inicio</Link>
-          <Link to="/indicador/1" className="btn">Indicador 1</Link>
-          {descartadosTotal?.size > 0 && (
-            <button type="button" className="btn btn-outline" onClick={reiniciar} aria-label="Borrar umbrales y volver a empezar">
-              Reiniciar (limpiar todo)
-            </button>
-          )}
+        {tabActivo === 'respuestas' && (
+          <div className="card" id="panel-respuestas" role="tabpanel" aria-labelledby="tab-respuestas">
+            <h2 className="ranking-tabla-titulo">Tus respuestas de la encuesta</h2>
+            {encuestaRespuestas && Object.keys(encuestaRespuestas).some((id) => {
+              const a = encuestaRespuestas[id]
+              return Array.isArray(a) ? a.length > 0 : a !== '' && a != null
+            }) ? (
+              <ul className="ranking-respuestas-list">
+                {ENCUESTA.map((block) => {
+                  const ans = encuestaRespuestas[block.id]
+                  const selected = block.type === 'checkbox'
+                    ? (Array.isArray(ans) ? ans : [])
+                    : (ans ? [ans] : [])
+                  const labels = selected
+                    .map((v) => block.options.find((o) => o.value === v)?.label)
+                    .filter(Boolean)
+                  if (labels.length === 0) return null
+                  return (
+                    <li key={block.id} className="ranking-respuestas-item">
+                      <span className="ranking-respuestas-title">{block.title}</span>
+                      <p className="ranking-respuestas-question">{block.question}</p>
+                      <p className="ranking-respuestas-answer">{labels.join(', ')}</p>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="ranking-respuestas-empty">Completa la encuesta para ver un resumen de tus respuestas aquí.</p>
+            )}
+          </div>
+        )}
+
+        <p className="page-links page-links-ranking">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => { reiniciar(); navigate('/') }}
+            aria-label="Reiniciar encuesta y volver al inicio"
+          >
+            Reiniciar encuesta
+          </button>
         </p>
       </div>
     </>

@@ -1,4 +1,4 @@
-# Plan: Sitio web “Por qué sí” — descarte de partidos por métricas
+# Plan: Sitio web “#PorEstosSi” — descarte de partidos por métricas
 
 ## Objetivo
 

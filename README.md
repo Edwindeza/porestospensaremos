@@ -1,4 +1,4 @@
-# Por qué sí — App (React + Vite)
+# #PorEstosSi — App (React + Vite)
 
 Sitio web para descartar partidos según indicadores. Los datos y la metodología están documentados en el [README principal](../README.md) del repo.
 

@@ -24,11 +24,11 @@ export default function Indicador() {
   if (!indicadores) {
     return (
       <>
-        <Helmet><title>{title} — Por qué sí</title></Helmet>
+        <Helmet><title>{title} — #PorEstosSi</title></Helmet>
         <div className="page">
           <h1>{title}</h1>
           <div className="card"><p>Cargando datos…</p></div>
-          <p className="page-links"><Link to="/" className="btn btn-secondary">Volver al inicio</Link></p>
+          <p className="page-links"><Link to="/umbrales" className="btn btn-secondary">Volver a umbrales</Link></p>
         </div>
       </>
     )
@@ -42,11 +42,11 @@ export default function Indicador() {
   if (!meta) {
     return (
       <>
-        <Helmet><title>{title} — Por qué sí</title></Helmet>
+        <Helmet><title>{title} — #PorEstosSi</title></Helmet>
         <div className="page">
           <h1>{title}</h1>
           <div className="card"><p>Indicador no encontrado.</p></div>
-          <p className="page-links"><Link to="/" className="btn btn-secondary">Volver al inicio</Link></p>
+          <p className="page-links"><Link to="/umbrales" className="btn btn-secondary">Volver a umbrales</Link></p>
         </div>
       </>
     )
@@ -78,7 +78,7 @@ export default function Indicador() {
   return (
     <>
       <Helmet>
-        <title>{title} — Por qué sí</title>
+        <title>{title} — #PorEstosSi</title>
         <meta name="description" content={title} />
       </Helmet>
       <div className="page page-indicador">
@@ -170,7 +170,7 @@ export default function Indicador() {
           ) : (
             <div className="indicador-slider-wrap">
               <label className="indicador-slider-label" htmlFor={`umbral-${id}`}>
-                Tu umbral (cuánto toleras): {formatValue(umbral, meta.unit)}{id === '3' ? ' — Candidatos sin declarar ingresos' : id === '6' ? ' — Congresistas actuales que buscan ser senadores' : id === '7' ? ' — Candidatos hábiles al Senado Nacional' : ''}
+                Tu umbral (cuánto toleras): {formatValue(umbral, meta.unit)}{id === '1' ? '% candidatos con sentencia firme' : id === '3' ? '  candidatos sin declarar ingresos' : id === '6' ? ' congresistas actuales que buscan ser senadores' : id === '7' ? ' candidatos hábiles al Senado Nacional' : ''}
               </label>
               <input
                 id={`umbral-${id}`}
@@ -220,7 +220,7 @@ export default function Indicador() {
         </div>
         </div>
         <p className="page-links indicador-links">
-          <Link to="/" className="btn btn-secondary">Volver al inicio</Link>
+          <Link to="/umbrales" className="btn btn-secondary">Volver a umbrales</Link>
           <Link to="/ranking" className="btn">Ver ranking</Link>
         </p>
       </div>
