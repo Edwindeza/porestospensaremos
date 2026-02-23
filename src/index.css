@@ -810,6 +810,29 @@ body {
   opacity: 0.6;
 }
 
+.encuesta-alert {
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--color-border);
+}
+
+.encuesta-alert--cero {
+  background: rgba(200, 30, 46, 0.08);
+  border-color: var(--color-accent);
+}
+
+.encuesta-alert-text {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.encuesta-alert-text:last-child {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
 .encuesta-progress-count {
   font-weight: 700;
   font-size: 0.95rem;
@@ -1526,22 +1549,29 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
 }
 
 /* Tablas: filas descartadas */
-.fila-siguen {
-  border-left: 3px solid var(--peru-gold);
+/* Solo resaltamos los primeros 5; el resto queda normal */
+.ranking-top5 {
+  border-left: 3px solid rgba(212, 175, 55, 0.5);
 }
 
-.fila-siguen td {
-  background: rgba(212, 175, 55, 0.08);
+.ranking-top5 td {
+  background: rgba(212, 175, 55, 0.06);
 }
 
-.fila-descartada {
-  opacity: 0.7;
-  background: var(--gray-neutral);
-}
-
-.fila-descartada td {
+/* Tachados: señal sutil para no perder contraste en modo oscuro */
+.fila-tachado td {
   color: var(--color-text-muted);
-  background: var(--gray-neutral);
+  border-left: 2px solid var(--color-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ranking-top5 td {
+    background: rgba(212, 175, 55, 0.12);
+  }
+  .fila-tachado td {
+    color: var(--color-text-muted);
+    opacity: 0.9;
+  }
 }
 
 /* Tablas ranking */
@@ -1587,13 +1617,13 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
   background-color: var(--peru-gold);
 }
 
-.ranking-leyenda-siguen {
+.ranking-leyenda-top5 {
   background-color: rgba(212, 175, 55, 0.5);
   border: 1px solid var(--peru-gold);
 }
 
 .ranking-leyenda-descartado {
-  background-color: var(--gray-neutral);
+  background-color: var(--color-border);
 }
 
 .ranking-tabs {
@@ -1666,6 +1696,29 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
   font-size: 0.95rem;
 }
 
+.ranking-alert {
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--color-border);
+}
+
+.ranking-alert--cero {
+  background: rgba(200, 30, 46, 0.08);
+  border-color: var(--color-accent);
+}
+
+.ranking-alert-text {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.ranking-alert-text:last-child {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
 .page-links-ranking {
   margin-top: var(--space-xl);
 }
@@ -1694,6 +1747,13 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
 
 .ranking-valor {
   font-variant-numeric: tabular-nums;
+}
+
+.ranking-sin-resultados {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: var(--space-xl) !important;
 }
 
 .ranking-top1 {

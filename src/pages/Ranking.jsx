@@ -11,7 +11,7 @@ function formatValor(v) {
 
 export default function Ranking() {
   const navigate = useNavigate()
-  const [tabActivo, setTabActivo] = useState('ranking')
+  const [tabActivo, setTabActivo] = useState('mis-resultados')
   const ranking = useDataStore((s) => s.ranking)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const reiniciar = useDataStore((s) => s.reiniciar)
@@ -33,7 +33,7 @@ export default function Ranking() {
   const partidos = ranking.partidos || []
   const pesos = ranking.pesos || {}
   const ordenados35 = [...partidos].sort((a, b) => (b.valor35 ?? -1) - (a.valor35 ?? -1))
-  const ordenados100 = [...partidos].sort((a, b) => (b.valor100 ?? -1) - (a.valor100 ?? -1))
+  const sobrevivientes35 = ordenados35.filter((p) => !descartadosTotal.has(p.nombre))
 
   const etiquetasPesos = {
     sentencias: 'Sentencias (I1)',
@@ -64,7 +64,29 @@ export default function Ranking() {
           Los partidos que descartaste en los indicadores se muestran en gris.
         </p>
 
-        <div className="ranking-tabs" role="tablist" aria-label="Ranking y Porcentaje">
+        {partidos.length > 0 && descartadosTotal.size >= partidos.length && (
+          <div className="ranking-alert ranking-alert--cero" role="alert">
+            <p className="ranking-alert-text">
+              Tus tolerancias indican que no aceptas a ninguno, pero eso genera un voto nulo o blanco que favorece a los #PorEstosNo.
+            </p>
+            <p className="ranking-alert-text">
+              Reconfigura tus tolerancias para ver qué partidos podrías aceptar.
+            </p>
+          </div>
+        )}
+
+        <div className="ranking-tabs" role="tablist" aria-label="Mis resultados, Ranking y más">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActivo === 'mis-resultados'}
+            aria-controls="panel-mis-resultados"
+            id="tab-mis-resultados"
+            className={`ranking-tab ${tabActivo === 'mis-resultados' ? 'ranking-tab-activo' : ''}`}
+            onClick={() => setTabActivo('mis-resultados')}
+          >
+            Mis resultados
+          </button>
           <button
             type="button"
             role="tab"
@@ -74,18 +96,7 @@ export default function Ranking() {
             className={`ranking-tab ${tabActivo === 'ranking' ? 'ranking-tab-activo' : ''}`}
             onClick={() => setTabActivo('ranking')}
           >
-            Ranking
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tabActivo === 'porcentaje'}
-            aria-controls="panel-porcentaje"
-            id="tab-porcentaje"
-            className={`ranking-tab ${tabActivo === 'porcentaje' ? 'ranking-tab-activo' : ''}`}
-            onClick={() => setTabActivo('porcentaje')}
-          >
-            Porcentaje
+            Ranking de partidos
           </button>
           <button
             type="button"
@@ -100,18 +111,65 @@ export default function Ranking() {
           </button>
         </div>
 
-        {tabActivo === 'ranking' && (
-        <div className="card" id="panel-ranking" role="tabpanel" aria-labelledby="tab-ranking">
+        {tabActivo === 'mis-resultados' && (
+        <div className="card" id="panel-mis-resultados" role="tabpanel" aria-labelledby="tab-mis-resultados">
           <div className="ranking-tabla-header">
-            <h2 className="ranking-tabla-titulo">Ranking (escala 22 — 35 = óptimo)</h2>
+            <h2 className="ranking-tabla-titulo">Según tu prioridad: partidos que sobrevivieron tu tacha (escala 22 — 35 = óptimo)</h2>
             <div className="ranking-leyenda" aria-label="Leyenda por colores">
               <span className="ranking-leyenda-item">
                 <span className="ranking-leyenda-dot ranking-leyenda-top1" aria-hidden="true" />
                 Primero
               </span>
               <span className="ranking-leyenda-item">
-                <span className="ranking-leyenda-dot ranking-leyenda-siguen" aria-hidden="true" />
-                Siguen
+                <span className="ranking-leyenda-dot ranking-leyenda-top5" aria-hidden="true" />
+                Top 5
+              </span>
+            </div>
+          </div>
+          <div className="table-wrap">
+            <table className="ranking-tabla">
+              <thead>
+                <tr>
+                  <th scope="col">Partido</th>
+                  <th scope="col">Valor compuesto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sobrevivientes35.length === 0 ? (
+                  <tr>
+                    <td colSpan={2} className="ranking-sin-resultados">Ningún partido pasó tus filtros. Reconfigura tus tolerancias.</td>
+                  </tr>
+                ) : (
+                  sobrevivientes35.map(({ nombre, valor35 }, index) => {
+                    const top1 = index === 0
+                    const top5 = index < 5
+                    const clase = top1 ? 'ranking-top1' : top5 ? 'ranking-top5' : ''
+                    return (
+                      <tr key={nombre} className={clase}>
+                        <td>{nombre}</td>
+                        <td className="ranking-valor">{formatValor(valor35)}</td>
+                      </tr>
+                    )
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        )}
+
+        {tabActivo === 'ranking' && (
+        <div className="card" id="panel-ranking" role="tabpanel" aria-labelledby="tab-ranking">
+          <div className="ranking-tabla-header">
+            <h2 className="ranking-tabla-titulo">Ranking de partidos (escala 22 — 35 = óptimo)</h2>
+            <div className="ranking-leyenda" aria-label="Leyenda por colores">
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-top1" aria-hidden="true" />
+                Primero
+              </span>
+              <span className="ranking-leyenda-item">
+                <span className="ranking-leyenda-dot ranking-leyenda-top5" aria-hidden="true" />
+                Top 5
               </span>
               <span className="ranking-leyenda-item">
                 <span className="ranking-leyenda-dot ranking-leyenda-descartado" aria-hidden="true" />
@@ -129,58 +187,17 @@ export default function Ranking() {
               </thead>
               <tbody>
                 {ordenados35.map(({ nombre, valor35 }, index) => {
-                  const descartado = descartadosTotal.has(nombre)
+                  const tachado = descartadosTotal.has(nombre)
                   const top1 = index === 0
-                  const siguen = !descartado
+                  const top5 = index < 5
+                  const clase = [
+                    tachado ? 'fila-tachado' : '',
+                    top1 ? 'ranking-top1' : top5 ? 'ranking-top5' : ''
+                  ].filter(Boolean).join(' ')
                   return (
-                    <tr key={nombre} className={[descartado ? 'fila-descartada' : '', siguen ? 'fila-siguen' : '', top1 ? 'ranking-top1' : ''].filter(Boolean).join(' ')}>
+                    <tr key={nombre} className={clase}>
                       <td>{nombre}</td>
                       <td className="ranking-valor">{formatValor(valor35)}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        )}
-
-        {tabActivo === 'porcentaje' && (
-        <div className="card" id="panel-porcentaje" role="tabpanel" aria-labelledby="tab-porcentaje">
-          <div className="ranking-tabla-header">
-            <h2 className="ranking-tabla-titulo">Porcentaje (escala 86 — 100 = óptimo)</h2>
-            <div className="ranking-leyenda" aria-label="Leyenda por colores">
-              <span className="ranking-leyenda-item">
-                <span className="ranking-leyenda-dot ranking-leyenda-top1" aria-hidden="true" />
-                Primero
-              </span>
-              <span className="ranking-leyenda-item">
-                <span className="ranking-leyenda-dot ranking-leyenda-siguen" aria-hidden="true" />
-                Siguen
-              </span>
-              <span className="ranking-leyenda-item">
-                <span className="ranking-leyenda-dot ranking-leyenda-descartado" aria-hidden="true" />
-                Tachados
-              </span>
-            </div>
-          </div>
-          <div className="table-wrap">
-            <table className="ranking-tabla">
-              <thead>
-                <tr>
-                  <th scope="col">Partido</th>
-                  <th scope="col">Valor compuesto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ordenados100.map(({ nombre, valor100 }, index) => {
-                  const descartado = descartadosTotal.has(nombre)
-                  const top1 = index === 0
-                  const siguen = !descartado
-                  return (
-                    <tr key={nombre} className={[descartado ? 'fila-descartada' : '', siguen ? 'fila-siguen' : '', top1 ? 'ranking-top1' : ''].filter(Boolean).join(' ')}>
-                      <td>{nombre}</td>
-                      <td className="ranking-valor">{formatValor(valor100)}</td>
                     </tr>
                   )
                 })}

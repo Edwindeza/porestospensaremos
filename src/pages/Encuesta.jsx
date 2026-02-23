@@ -109,6 +109,17 @@ export default function Encuesta() {
           </div>
         </div>
 
+        {totalPartidos > 0 && restantes === 0 && (
+          <div className="encuesta-alert encuesta-alert--cero" role="alert">
+            <p className="encuesta-alert-text">
+              Tus tolerancias indican que no aceptas a ninguno, pero eso genera un voto nulo o blanco que favorece a los #PorEstosNo.
+            </p>
+            <p className="encuesta-alert-text">
+              Reconfigura tus tolerancias para ver qué partidos podrías aceptar.
+            </p>
+          </div>
+        )}
+
         <form className="encuesta-form" onSubmit={(e) => e.preventDefault()}>
           <div className={`encuesta-step-wrap encuesta-step-wrap--${direction}`} key={step}>
             {block && (
