@@ -979,10 +979,20 @@ body {
   margin-bottom: var(--space-md);
 }
 
-.encuesta-question-wrap .encuesta-question {
+.encuesta-question-wrap .encuesta-question-block {
   flex: 1;
-  margin: 0;
   min-width: 0;
+}
+
+.encuesta-question-wrap .encuesta-question-block .encuesta-question {
+  margin: 0;
+}
+
+.encuesta-help-text {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted, #666);
+  line-height: 1.4;
 }
 
 .indicador-info-btn-encuesta {

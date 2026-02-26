@@ -43,30 +43,31 @@ export const ENCUESTA = [
     ],
   },
   {
-    id: '4b',
+    id: '4',
     title: 'Indicador 4',
     question: '¿Qué nivel de ingresos, como promedio, espera de los 30 candidatos al Senado Nacional? (puede escoger más de una)',
     type: 'checkbox',
     options: [
-      { value: 'A', label: 'A) Bajo, menos de 3000 mensual', umbral: { min: 0, max: 5000 } },
-      { value: 'B', label: 'B) Medio bajo, de 3000 a 6000 mensual', umbral: { min: 5000, max: 10000 } },
-      { value: 'C', label: 'C) Medio, de 6000 a 9000 mensual', umbral: { min: 10000, max: 15000 } },
-      { value: 'D', label: 'D) Medio alto, de 9000 a 12000 mensual', umbral: { min: 15000, max: 20000 } },
-      { value: 'E', label: 'E) Alto, más de 12000 mensual', umbral: { min: 20000, max: 25000 } },
+      { value: 'A', label: 'A) Bajo, menos de 3000 mensual', umbral: { min: 0, max: 3000 } },
+      { value: 'B', label: 'B) Medio bajo, de 3000 a 6000 mensual', umbral: { min: 3000, max: 6000 } },
+      { value: 'C', label: 'C) Medio, de 6000 a 9000 mensual', umbral: { min: 6000, max: 9000 } },
+      { value: 'D', label: 'D) Medio alto, de 9000 a 12000 mensual', umbral: { min: 9000, max: 12000 } },
+      { value: 'E', label: 'E) Alto, más de 12000 mensual', umbral: { min: 12000, max: 25000 } },
     ],
   },
   {
     id: '5',
     title: 'Indicador 5',
     question: '¿Cuántos candidatos, de los 30 al Senado Nacional, acepta con participación pasada en los partidos de #PorEstosNo?',
+    helpText: 'Mientras más bajo el número, menos candidatos están asociados a #PorEstosNo. Con excepción del FREPAP, todos tienen algún candidato con historial político en alguno de los partidos de #PorEstosNo. Las opciones son por cantidad de candidatos (no porcentaje), según los datos por lista.',
     type: 'radio',
     options: [
-      { value: 'A', label: 'A) Ninguno', umbral: 0 },
-      { value: 'B', label: 'B) 1 a 3', umbral: 10 },
-      { value: 'C', label: 'C) 4 a 7', umbral: 23 },
-      { value: 'D', label: 'D) 8 a 11', umbral: 37 },
-      { value: 'E', label: 'E) 11 a 20', umbral: 67 },
-      { value: 'F', label: 'F) Voy a votar por #PorEstosNo', umbral: 100 },
+      { value: 'A', label: 'A) 0', umbral: 0 },
+      { value: 'B', label: 'B) 1 a 4', umbral: 4 },
+      { value: 'C', label: 'C) 5 o 6', umbral: 6 },
+      { value: 'D', label: 'D) 7 u 8', umbral: 8 },
+      { value: 'E', label: 'E) 9 a 12', umbral: 12 },
+      { value: 'F', label: 'F) votaré #porestosno', umbral: 100 },
     ],
   },
   {
@@ -120,10 +121,13 @@ export function buildUmbralesFromEncuesta(answers, meta) {
   for (const id of Object.keys(meta)) {
     next[id] = defaultUmbralForMeta(meta[id])
   }
+  /** Clave en meta/umbrales: la encuesta usa id '4' pero el indicador en datos es '4b'. */
+  const metaKey = (blockId) => (blockId === '4' ? '4b' : blockId)
   for (const block of ENCUESTA) {
     const ans = answers[block.id]
     if (ans == null || ans === '') continue
     if (Array.isArray(ans) && ans.length === 0) continue
+    const key = metaKey(block.id)
     if (block.type === 'checkbox') {
       const selected = Array.isArray(ans) ? ans : [ans]
       if (selected.length === 0) continue
@@ -131,11 +135,11 @@ export function buildUmbralesFromEncuesta(answers, meta) {
       if (opts.length === 0) continue
       const mins = opts.map((o) => o.umbral.min)
       const maxs = opts.map((o) => o.umbral.max)
-      next[block.id] = { min: Math.min(...mins), max: Math.max(...maxs) }
+      next[key] = { min: Math.min(...mins), max: Math.max(...maxs) }
     } else {
       const opt = block.options.find((o) => o.value === ans)
       if (!opt) continue
-      next[block.id] = typeof opt.umbral === 'object' ? { ...opt.umbral } : opt.umbral
+      next[key] = typeof opt.umbral === 'object' ? { ...opt.umbral } : opt.umbral
     }
   }
   return next

@@ -3,7 +3,7 @@ export const TITLES = {
   '2': 'I2 — Índice de Preparación (0 a 20)',
   '3': 'I3 — Cantidad de Candidatos que han declarado ingreso S/ 0.00',
   '4b': 'I4 — Promedio de Ingreso Anual por Candidato (sin máx. ni S/ 0)',
-  '5': 'I5 — Historial asociado #PorEstosNo',
+  '5': 'I5 — Historial asociado #PorEstosNo (cantidad 0 a 12)',
   '6': 'I6 — Cantidad de Congresistas que buscan Reelección',
   '7': 'I7 — Candidatos Hábiles al Senado Nacional (0 a 30)',
   '8': 'I8 — Índice de Presencia de Candidatos en REINFO',
@@ -39,7 +39,7 @@ export const TEXTO_INFO_I3 = 'Indica cuántos Candidatos de la lista al SENADO d
 
 export const TEXTO_INFO_I4b = 'Mide el promedio de ingreso anual declarado por candidato en el partido, sin considerar los que declararon S/ 0 ni valores máximos extremos. Da una idea del nivel socioeconómico de la lista. Puedes elegir un rango (mínimo y máximo) y descartar partidos fuera de ese rango.'
 
-export const TEXTO_INFO_I5 = 'Mide en qué medida candidatos o figuras asociadas al movimiento #PorEstosNo aparecen en listas de otros partidos (historial asociado #PorEstosNo). Es un índice ponderado por posición en lista; va de 0 a 100 %. Un valor más alto indica mayor presencia de esos nombres en la lista del partido; puedes descartar partidos por encima de un umbral que elijas.'
+export const TEXTO_INFO_I5 = 'Mide cuántos candidatos de la lista al Senado (de 30) tienen participación pasada en partidos de #PorEstosNo. Es una cantidad de 0 a 12 por lista. Un valor más alto indica más candidatos con ese historial; puedes descartar partidos por encima de un umbral que elijas.'
 
 export const TEXTO_INFO_I6 = 'Cuenta cuántos congresistas del partido están buscando reelección. Sirve para ver concentración de carrera política o continuismo. Puedes fijar un tope y descartar partidos con más de X candidatos en reelección.'
 

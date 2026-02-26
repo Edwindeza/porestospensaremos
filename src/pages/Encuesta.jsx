@@ -122,17 +122,22 @@ export default function Encuesta() {
               <fieldset className="encuesta-block encuesta-step-block">
                 <legend className="encuesta-block-title">{block.title}</legend>
                 <div className="encuesta-question-wrap">
-                  <p className="encuesta-question">
-                    {typeof block.question === 'string'
-                      ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
-                          p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
-                        )
-                      : block.question}
-                  </p>
+                  <div className="encuesta-question-block">
+                    <p className="encuesta-question">
+                      {typeof block.question === 'string'
+                        ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
+                            p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
+                          )
+                        : block.question}
+                    </p>
+                    {block.helpText && (
+                      <p className="encuesta-help-text">{block.helpText}</p>
+                    )}
+                  </div>
                   <button
                     type="button"
                     className="indicador-info-btn indicador-info-btn-encuesta"
-                    onClick={() => setInfoIndicadorId(block.id)}
+                    onClick={() => setInfoIndicadorId(block.id === '4' ? '4b' : block.id)}
                     aria-label={`Información: ${block.title}`}
                     title={`Información: ${block.title}`}
                   >
