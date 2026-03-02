@@ -1,15 +1,24 @@
 import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
 
 export default function Inicio() {
+  const navigate = useNavigate()
   const reiniciar = useDataStore((s) => s.reiniciar)
   const setModo = useDataStore((s) => s.setModo)
+  const setAmbito = useDataStore((s) => s.setAmbito)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const hayAlgoQueLimpiar = descartadosTotal?.size > 0
 
   useEffect(() => { setModo('intervalo') }, [setModo])
+
+  const loadData = useDataStore((s) => s.loadData)
+
+  const goAmbito = (ambito) => {
+    setAmbito(ambito)
+    loadData().then(() => navigate('/intervalos/indicador/1'))
+  }
 
   return (
     <>
@@ -25,13 +34,14 @@ export default function Inicio() {
           quedarán en gris en las siguientes y al final puedes ver cuáles cumplen todos tus indicadores.
         </p>
         <div className="card">
-          <div className="inicio-actions">
-            <Link to="/intervalos/indicador/1" className="btn">
-              Comenzar por Indicador 1 (Sentencias)
-            </Link>
-            <Link to="/ranking" className="btn btn-secondary">
-              Ver ranking
-            </Link>
+          <p className="inicio-elegir-ambito">Elige el ámbito:</p>
+          <div className="inicio-actions inicio-actions-ambito">
+            <button type="button" className="btn" onClick={() => goAmbito('nacional')}>
+              SENADO NACIONAL
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => goAmbito('regional')}>
+              SENADO REGIONAL
+            </button>
           </div>
           {hayAlgoQueLimpiar && (
             <p className="inicio-reiniciar-wrap">

@@ -27,7 +27,9 @@ export default function Layout({ children }) {
   const restantes = totalPartidos - tachados
   const infoIndicadorId = useDataStore((s) => s.infoIndicadorId)
   const setInfoIndicadorId = useDataStore((s) => s.setInfoIndicadorId)
+  const ambito = useDataStore((s) => s.ambito)
 
+  const tituloAmbito = ambito === 'regional' ? 'SENADO REGIONAL 2026' : ambito === 'nacional' ? 'SENADO NACIONAL 2026' : 'Elige el ámbito'
   const pasoActual = PASOS.indexOf(location.pathname)
   const tieneAnterior = pasoActual > 0
   const tieneSiguiente = pasoActual >= 0 && pasoActual < PASOS.length - 1
@@ -45,7 +47,7 @@ export default function Layout({ children }) {
       {/* Barra superior: solo logo. Botones y contador van en la barra inferior */}
       <header className="app-topbar">
         <Link to="/intervalos" className="app-logo">
-          #PorEstosSi — indicadores por intervalos — SENADO NACIONAL 2026
+          #PorEstosSi — indicadores por intervalos — {tituloAmbito}
         </Link>
       </header>
 
@@ -59,7 +61,7 @@ export default function Layout({ children }) {
                   Inicio
                 </Link>
               </li>
-              {INDICADORES.map(({ id, label }) => (
+              {ambito && INDICADORES.map(({ id, label }) => (
                 <li key={id} className="app-nav-indicador-item">
                   <Link
                     to={`/intervalos/indicador/${id}`}
@@ -78,11 +80,13 @@ export default function Layout({ children }) {
                   </button>
                 </li>
               ))}
-              <li>
-                <Link to="/ranking" className={location.pathname === '/ranking' ? 'active' : ''}>
-                  Ranking
-                </Link>
-              </li>
+              {ambito && (
+                <li>
+                  <Link to="/ranking" className={location.pathname === '/ranking' ? 'active' : ''}>
+                    Ranking
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
         </aside>
@@ -92,7 +96,8 @@ export default function Layout({ children }) {
         </main>
       </div>
 
-      {/* Barra inferior: Anterior | restantes/tachados | Continuar; sticky al fondo; al scroll total queda pegada al footer */}
+      {/* Barra inferior: Anterior | restantes/tachados | Continuar; solo visible cuando hay ámbito elegido */}
+      {ambito && (
       <div className="app-restantes-bar">
         <nav className="app-topbar-nav" aria-label="Recorrido por indicadores">
           {tieneAnterior ? (
@@ -128,6 +133,7 @@ export default function Layout({ children }) {
           )}
         </nav>
       </div>
+      )}
 
       {infoIndicadorId && (
         <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">

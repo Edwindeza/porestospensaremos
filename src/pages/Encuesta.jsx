@@ -17,9 +17,11 @@ export default function Encuesta() {
   const infoIndicadorId = useDataStore((s) => s.infoIndicadorId)
   const setInfoIndicadorId = useDataStore((s) => s.setInfoIndicadorId)
   const setModo = useDataStore((s) => s.setModo)
+  const setAmbitoStore = useDataStore((s) => s.setAmbito)
 
   useEffect(() => { setModo('encuesta') }, [setModo])
 
+  const [ambito, setAmbito] = useState('')
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState('next')
   const [answers, setAnswers] = useState(() => {
@@ -79,7 +81,8 @@ export default function Encuesta() {
     })
   }, [])
 
-  const block = ENCUESTA[step]
+  const ambitoLabel = ambito === 'regional' ? 'Senado Regional' : 'Senado Nacional'
+  const block = ambito ? ENCUESTA[step] : null
   const isCheckboxBlock = block?.type === 'checkbox'
   const checkboxSelection = block && (answers[block.id] || [])
   const canAdvanceCheckbox = Array.isArray(checkboxSelection) && checkboxSelection.length > 0
@@ -88,117 +91,156 @@ export default function Encuesta() {
     <>
       <Helmet>
         <title>Encuesta — #PorEstosSi</title>
-        <meta name="description" content="Responde unas preguntas y descubre qué partidos se acercan a lo que tú esperas para el Senado Nacional 2026." />
+        <meta
+          name="description"
+          content={
+            ambito
+              ? `Responde unas preguntas y descubre qué partidos se acercan a lo que tú esperas para el ${ambitoLabel} 2026.`
+              : 'Elige el ámbito (Senado Nacional o Senado Regional) y responde unas preguntas para filtrar partidos según tus criterios.'
+          }
+        />
       </Helmet>
       <div className="page page-encuesta">
         <h1>#PorEstosSi</h1>
         <p className="encuesta-intro">
-          Responde según lo que tú aceptarías en los candidatos al Senado Nacional.
+          {ambito
+            ? <>Responde según lo que tú aceptarías en los candidatos al {ambitoLabel}.</>
+            : <>Elige el ámbito y luego responde la encuesta.</>}
         </p>
 
-        <div className="encuesta-progress-wrap">
-          <div className="encuesta-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={ENCUESTA.length} aria-label="Progreso de la encuesta">
-            <div className="encuesta-progress-bar" style={{ width: `${(step + 1) / ENCUESTA.length * 100}%` }} />
+        {!ambito ? (
+          <div className="card">
+            <p className="inicio-elegir-ambito">Elige el ámbito:</p>
+            <div className="inicio-actions inicio-actions-ambito">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => { setAmbitoStore('nacional'); setAmbito('nacional'); loadData() }}
+              >
+                SENADO NACIONAL
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => { setAmbitoStore('regional'); setAmbito('regional'); loadData() }}
+              >
+                SENADO REGIONAL
+              </button>
+            </div>
           </div>
-          <div className="encuesta-progress-text">
-            <span className="encuesta-progress-counts">
-              {totalPartidos > 0 ? (
-                <>
-                  <span className="encuesta-progress-count encuesta-progress-count--restantes">{restantes} restantes</span>
-                  <span className="encuesta-progress-sep" aria-hidden="true"> / </span>
-                  <span className="encuesta-progress-count encuesta-progress-count--tachados">{tachados} tachados</span>
-                </>
-              ) : (
-                <span aria-hidden="true"> </span>
-              )}
-            </span>
-            <span className="encuesta-progress-step">{step + 1} de {ENCUESTA.length}</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="encuesta-progress-wrap">
+              <div className="encuesta-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={ENCUESTA.length} aria-label="Progreso de la encuesta">
+                <div className="encuesta-progress-bar" style={{ width: `${(step + 1) / ENCUESTA.length * 100}%` }} />
+              </div>
+              <div className="encuesta-progress-text">
+                <span className="encuesta-progress-counts">
+                  {totalPartidos > 0 ? (
+                    <>
+                      <span className="encuesta-progress-count encuesta-progress-count--restantes">{restantes} restantes</span>
+                      <span className="encuesta-progress-sep" aria-hidden="true"> / </span>
+                      <span className="encuesta-progress-count encuesta-progress-count--tachados">{tachados} tachados</span>
+                    </>
+                  ) : (
+                    <span aria-hidden="true"> </span>
+                  )}
+                </span>
+                <span className="encuesta-progress-step">{step + 1} de {ENCUESTA.length}</span>
+              </div>
+            </div>
 
-        <form className="encuesta-form" onSubmit={(e) => e.preventDefault()}>
-          <div className={`encuesta-step-wrap encuesta-step-wrap--${direction}`} key={step}>
-            {block && (
-              <fieldset className="encuesta-block encuesta-step-block">
-                <legend className="encuesta-block-title">{block.title}</legend>
-                <div className="encuesta-question-wrap">
-                  <div className="encuesta-question-block">
-                    <p className="encuesta-question">
-                      {typeof block.question === 'string'
-                        ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
-                            p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
-                          )
-                        : block.question}
-                    </p>
-                    {block.helpText && (
-                      <p className="encuesta-help-text">{block.helpText}</p>
-                    )}
-                  </div>
+            <form className="encuesta-form" onSubmit={(e) => e.preventDefault()}>
+              <div className={`encuesta-step-wrap encuesta-step-wrap--${direction}`} key={step}>
+                {block && (
+                  <fieldset className="encuesta-block encuesta-step-block">
+                    <legend className="encuesta-block-title">{block.title}</legend>
+                    <div className="encuesta-question-wrap">
+                      <div className="encuesta-question-block">
+                        <p className="encuesta-question">
+                          {typeof block.question === 'string'
+                            ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
+                                p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
+                              )
+                            : block.question}
+                        </p>
+                        {block.helpText && (
+                          <p className="encuesta-help-text">{block.helpText}</p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="indicador-info-btn indicador-info-btn-encuesta"
+                        onClick={() => setInfoIndicadorId(block.id === '4' ? '4b' : block.id)}
+                        aria-label={`Información: ${block.title}`}
+                        title={`Información: ${block.title}`}
+                      >
+                        i
+                      </button>
+                    </div>
+                    <div className="encuesta-options" role={block.type === 'radio' ? 'radiogroup' : undefined} aria-label={typeof block.question === 'string' ? block.question.replace(/\*[^*]+\*/g, (m) => m.slice(1, -1)) : block.question}>
+                      {block.type === 'radio' &&
+                        block.options.map((opt) => (
+                          <label
+                            key={opt.value}
+                            className="encuesta-option"
+                            onClick={(e) => {
+                              if (answers[block.id] === opt.value) {
+                                e.preventDefault()
+                                advanceToNext()
+                              }
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name={`encuesta-${block.id}`}
+                              value={opt.value}
+                              checked={answers[block.id] === opt.value}
+                              onChange={() => setAnswer(block.id, opt.value)}
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        ))}
+                      {block.type === 'checkbox' &&
+                        block.options.map((opt) => (
+                          <label key={opt.value} className="encuesta-option">
+                            <input
+                              type="checkbox"
+                              value={opt.value}
+                              checked={(answers[block.id] || []).includes(opt.value)}
+                              onChange={() => toggleCheckbox(block.id, opt.value)}
+                            />
+                            <span>{opt.label}</span>
+                          </label>
+                        ))}
+                    </div>
+                  </fieldset>
+                )}
+              </div>
+
+              <div className="encuesta-nav">
+                {step > 0 ? (
                   <button
                     type="button"
-                    className="indicador-info-btn indicador-info-btn-encuesta"
-                    onClick={() => setInfoIndicadorId(block.id === '4' ? '4b' : block.id)}
-                    aria-label={`Información: ${block.title}`}
-                    title={`Información: ${block.title}`}
+                    className="btn btn-outline encuesta-back"
+                    onClick={() => { setDirection('prev'); setStep(step - 1) }}
                   >
-                    i
+                    ← Anterior
                   </button>
-                </div>
-                <div className="encuesta-options" role={block.type === 'radio' ? 'radiogroup' : undefined} aria-label={typeof block.question === 'string' ? block.question.replace(/\*[^*]+\*/g, (m) => m.slice(1, -1)) : block.question}>
-                  {block.type === 'radio' &&
-                    block.options.map((opt) => (
-                      <label
-                        key={opt.value}
-                        className="encuesta-option"
-                        onClick={(e) => {
-                          if (answers[block.id] === opt.value) {
-                            e.preventDefault()
-                            advanceToNext()
-                          }
-                        }}
-                      >
-                        <input
-                          type="radio"
-                          name={`encuesta-${block.id}`}
-                          value={opt.value}
-                          checked={answers[block.id] === opt.value}
-                          onChange={() => setAnswer(block.id, opt.value)}
-                        />
-                        <span>{opt.label}</span>
-                      </label>
-                    ))}
-                  {block.type === 'checkbox' &&
-                    block.options.map((opt) => (
-                      <label key={opt.value} className="encuesta-option">
-                        <input
-                          type="checkbox"
-                          value={opt.value}
-                          checked={(answers[block.id] || []).includes(opt.value)}
-                          onChange={() => toggleCheckbox(block.id, opt.value)}
-                        />
-                        <span>{opt.label}</span>
-                      </label>
-                    ))}
-                </div>
-                {isCheckboxBlock && (
+                ) : (
+                  <span />
+                )}
+                {isCheckboxBlock ? (
                   <button type="button" className="btn encuesta-next-btn" onClick={goNext} disabled={!canAdvanceCheckbox}>
                     Siguiente
                   </button>
+                ) : (
+                  <span />
                 )}
-              </fieldset>
-            )}
-          </div>
-
-          {step > 0 && (
-            <button
-              type="button"
-              className="btn btn-outline encuesta-back"
-              onClick={() => { setDirection('prev'); setStep(step - 1) }}
-            >
-              ← Anterior
-            </button>
-          )}
-        </form>
+              </div>
+            </form>
+          </>
+        )}
       </div>
 
       {infoIndicadorId && (

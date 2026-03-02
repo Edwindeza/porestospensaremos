@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 const STORAGE_KEY = 'porquiensi_umbrales'
 const MODO_KEY = 'porquiensi_modo'
+const AMBITO_KEY = 'porquiensi_ambito'
 
 const storage = typeof sessionStorage !== 'undefined' ? sessionStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} }
 
@@ -18,6 +19,23 @@ function getStoredModo() {
 function setStoredModo(modo) {
   try {
     storage.setItem(MODO_KEY, modo)
+  } catch (_) {}
+}
+
+function getStoredAmbito() {
+  try {
+    const a = storage.getItem(AMBITO_KEY)
+    if (a === 'nacional' || a === 'regional') return a
+    return ''
+  } catch {
+    return ''
+  }
+}
+
+function setStoredAmbito(ambito) {
+  try {
+    if (ambito) storage.setItem(AMBITO_KEY, ambito)
+    else storage.removeItem(AMBITO_KEY)
   } catch (_) {}
 }
 
@@ -103,6 +121,12 @@ export const useDataStore = create((set) => ({
   encuestaRespuestas: null,
   setEncuestaRespuestas: (answers) => set({ encuestaRespuestas: answers }),
   modo: getStoredModo(),
+  ambito: getStoredAmbito(),
+  setAmbito: (ambito) => {
+    if (ambito !== 'nacional' && ambito !== 'regional' && ambito !== '') return
+    setStoredAmbito(ambito)
+    set({ ambito })
+  },
   setModo: (modo) => {
     if (modo !== 'encuesta' && modo !== 'intervalo') return
     clearStored()
@@ -135,8 +159,10 @@ export const useDataStore = create((set) => ({
 
   loadData: async () => {
     try {
+      const ambito = useDataStore.getState().ambito
+      const indicadoresUrl = ambito === 'regional' ? '/data/indicadores-regional.json' : '/data/indicadores.json'
       const [ind, rank] = await Promise.all([
-        fetch('/data/indicadores.json').then((r) => r.json()),
+        fetch(indicadoresUrl).then((r) => r.json()),
         fetch('/data/ranking.json').then((r) => r.json()),
       ])
       set((state) => {
