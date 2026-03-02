@@ -69,6 +69,16 @@ export const ENCUESTA = [
       { value: 'E', label: 'E) 9 a 12', umbral: 12 },
       { value: 'F', label: 'F) votaré #porestosno', umbral: 100 },
     ],
+    questionRegional: '¿Cuántos candidatos, de los 30 al Senado Regional, acepta con participación pasada en los partidos de #PorEstosNo?',
+    helpTextRegional: 'Mientras más bajo el número, menos candidatos están asociados a #PorEstosNo. Solo se consideran partidos con lista al Senado Regional. Las opciones son por cantidad (0 a 27).',
+    optionsRegional: [
+      { value: 'A', label: 'A) 0', umbral: 0 },
+      { value: 'B', label: 'B) 1 a 15', umbral: 15 },
+      { value: 'C', label: 'C) 15 a 20', umbral: 20 },
+      { value: 'D', label: 'D) 20 a 25', umbral: 25 },
+      { value: 'E', label: 'E) 25 o más', umbral: 27 },
+      { value: 'F', label: 'F) votaré #porestosno', umbral: 100 },
+    ],
   },
   {
     id: '6',
@@ -114,8 +124,20 @@ function defaultUmbralForMeta(meta) {
   return meta.higherIsBetter ? meta.min : meta.max
 }
 
+/** Opciones efectivas del bloque: en regional usa optionsRegional si existe (p. ej. Indicador 5). */
+export function getOptionsForBlock(block, ambito) {
+  if (ambito === 'regional' && block.optionsRegional && block.optionsRegional.length > 0) {
+    return block.optionsRegional
+  }
+  return block.options
+}
+
+function getBlockOptions(block, ambito) {
+  return getOptionsForBlock(block, ambito)
+}
+
 /** Construye el objeto umbrales completo: por defecto "acepta todos" y solo los indicadores respondidos se aplican. Así no arrastramos filtros viejos de otros indicadores. */
-export function buildUmbralesFromEncuesta(answers, meta) {
+export function buildUmbralesFromEncuesta(answers, meta, ambito = '') {
   if (!meta || typeof meta !== 'object') return {}
   const next = {}
   for (const id of Object.keys(meta)) {
@@ -128,16 +150,17 @@ export function buildUmbralesFromEncuesta(answers, meta) {
     if (ans == null || ans === '') continue
     if (Array.isArray(ans) && ans.length === 0) continue
     const key = metaKey(block.id)
+    const options = getBlockOptions(block, ambito)
     if (block.type === 'checkbox') {
       const selected = Array.isArray(ans) ? ans : [ans]
       if (selected.length === 0) continue
-      const opts = block.options.filter((o) => selected.includes(o.value))
+      const opts = options.filter((o) => selected.includes(o.value))
       if (opts.length === 0) continue
       const mins = opts.map((o) => o.umbral.min)
       const maxs = opts.map((o) => o.umbral.max)
       next[key] = { min: Math.min(...mins), max: Math.max(...maxs) }
     } else {
-      const opt = block.options.find((o) => o.value === ans)
+      const opt = options.find((o) => o.value === ans)
       if (!opt) continue
       next[key] = typeof opt.umbral === 'object' ? { ...opt.umbral } : opt.umbral
     }
@@ -146,7 +169,7 @@ export function buildUmbralesFromEncuesta(answers, meta) {
 }
 
 /** Aplica las respuestas de la encuesta al store. Usa buildUmbralesFromEncuesta + setUmbralesFromEncuesta para que los indicadores no respondidos queden en "acepta todos" y no se arrastren filtros viejos. */
-export function applyEncuestaToStore(answers, meta, setUmbralesFromEncuesta) {
-  const next = buildUmbralesFromEncuesta(answers, meta)
+export function applyEncuestaToStore(answers, meta, setUmbralesFromEncuesta, ambito = '') {
+  const next = buildUmbralesFromEncuesta(answers, meta, ambito)
   if (Object.keys(next).length > 0) setUmbralesFromEncuesta(next)
 }

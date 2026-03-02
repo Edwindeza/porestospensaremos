@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
-import { ENCUESTA, applyEncuestaToStore } from '../data/encuestaConfig'
+import { ENCUESTA, applyEncuestaToStore, getOptionsForBlock } from '../data/encuestaConfig'
 import { TITLES, getModalTexto } from '../data/indicadorInfo'
 
 export default function Encuesta() {
@@ -36,18 +36,18 @@ export default function Encuesta() {
   const goNext = useCallback(() => {
     loadData().then(() => {
       const { indicadores, setUmbralesFromEncuesta: setUmbrales } = useDataStore.getState()
-      applyEncuestaToStore(answers, indicadores?.meta, setUmbrales)
+      applyEncuestaToStore(answers, indicadores?.meta, setUmbrales, ambito)
       setDirection('next')
       setStep((s) => s + 1)
     })
-  }, [answers, loadData])
+  }, [answers, loadData, ambito])
 
   const setAnswer = useCallback((id, value) => {
     const nextAnswers = { ...answers, [id]: value }
     setAnswers(nextAnswers)
     loadData().then(() => {
       const { indicadores, setUmbralesFromEncuesta: setUmbrales } = useDataStore.getState()
-      applyEncuestaToStore(nextAnswers, indicadores?.meta, setUmbrales)
+      applyEncuestaToStore(nextAnswers, indicadores?.meta, setUmbrales, ambito)
       if (step === ENCUESTA.length - 1) {
         setEncuestaRespuestas(nextAnswers)
         navigate('/ranking')
@@ -56,13 +56,13 @@ export default function Encuesta() {
         setStep((s) => s + 1)
       }
     })
-  }, [answers, step, loadData, setEncuestaRespuestas, navigate])
+  }, [answers, step, loadData, setEncuestaRespuestas, navigate, ambito])
 
   /** Avanzar al siguiente ítem al hacer clic de nuevo en la opción ya seleccionada (onChange no se dispara en radios). */
   const advanceToNext = useCallback(() => {
     loadData().then(() => {
       const { indicadores, setUmbralesFromEncuesta: setUmbrales } = useDataStore.getState()
-      applyEncuestaToStore(answers, indicadores?.meta, setUmbrales)
+      applyEncuestaToStore(answers, indicadores?.meta, setUmbrales, ambito)
       if (step === ENCUESTA.length - 1) {
         setEncuestaRespuestas(answers)
         navigate('/ranking')
@@ -71,7 +71,7 @@ export default function Encuesta() {
         setStep((s) => s + 1)
       }
     })
-  }, [answers, step, loadData, setEncuestaRespuestas, navigate])
+  }, [answers, step, loadData, setEncuestaRespuestas, navigate, ambito])
 
   const toggleCheckbox = useCallback((id, value) => {
     setAnswers((prev) => {
@@ -82,6 +82,7 @@ export default function Encuesta() {
   }, [])
 
   const ambitoLabel = ambito === 'regional' ? 'Senado Regional' : 'Senado Nacional'
+  const textoPorAmbito = (texto) => (typeof texto === 'string' ? texto.replace(/Senado Nacional/g, ambitoLabel) : texto)
   const block = ambito ? ENCUESTA[step] : null
   const isCheckboxBlock = block?.type === 'checkbox'
   const checkboxSelection = block && (answers[block.id] || [])
@@ -152,20 +153,23 @@ export default function Encuesta() {
 
             <form className="encuesta-form" onSubmit={(e) => e.preventDefault()}>
               <div className={`encuesta-step-wrap encuesta-step-wrap--${direction}`} key={step}>
-                {block && (
+                {block && (() => {
+                  const questionText = (ambito === 'regional' && block.questionRegional) ? block.questionRegional : block.question
+                  const helpText = (ambito === 'regional' && block.helpTextRegional) ? block.helpTextRegional : block.helpText
+                  return (
                   <fieldset className="encuesta-block encuesta-step-block">
                     <legend className="encuesta-block-title">{block.title}</legend>
                     <div className="encuesta-question-wrap">
                       <div className="encuesta-question-block">
                         <p className="encuesta-question">
-                          {typeof block.question === 'string'
-                            ? block.question.split(/(\*[^*]+\*)/g).map((p, i) =>
+                          {typeof questionText === 'string'
+                            ? textoPorAmbito(questionText).split(/(\*[^*]+\*)/g).map((p, i) =>
                                 p.startsWith('*') && p.endsWith('*') ? <strong key={i}>{p.slice(1, -1)}</strong> : p
                               )
-                            : block.question}
+                            : questionText}
                         </p>
-                        {block.helpText && (
-                          <p className="encuesta-help-text">{block.helpText}</p>
+                        {helpText && (
+                          <p className="encuesta-help-text">{textoPorAmbito(helpText)}</p>
                         )}
                       </div>
                       <button
@@ -178,9 +182,9 @@ export default function Encuesta() {
                         i
                       </button>
                     </div>
-                    <div className="encuesta-options" role={block.type === 'radio' ? 'radiogroup' : undefined} aria-label={typeof block.question === 'string' ? block.question.replace(/\*[^*]+\*/g, (m) => m.slice(1, -1)) : block.question}>
+                    <div className="encuesta-options" role={block.type === 'radio' ? 'radiogroup' : undefined} aria-label={typeof questionText === 'string' ? textoPorAmbito(questionText).replace(/\*[^*]+\*/g, (m) => m.slice(1, -1)) : questionText}>
                       {block.type === 'radio' &&
-                        block.options.map((opt) => (
+                        getOptionsForBlock(block, ambito).map((opt) => (
                           <label
                             key={opt.value}
                             className="encuesta-option"
@@ -202,7 +206,7 @@ export default function Encuesta() {
                           </label>
                         ))}
                       {block.type === 'checkbox' &&
-                        block.options.map((opt) => (
+                        getOptionsForBlock(block, ambito).map((opt) => (
                           <label key={opt.value} className="encuesta-option">
                             <input
                               type="checkbox"
@@ -215,7 +219,8 @@ export default function Encuesta() {
                         ))}
                     </div>
                   </fieldset>
-                )}
+                  )
+                })()}
               </div>
 
               <div className="encuesta-nav">
@@ -248,7 +253,7 @@ export default function Encuesta() {
           <div className="modal-backdrop" onClick={() => setInfoIndicadorId(null)} aria-hidden="true" />
           <div className="modal-caja">
             <div className="modal-cabecera">
-              <h2 id="modal-titulo-encuesta" className="modal-titulo">{TITLES[infoIndicadorId] || `Indicador ${infoIndicadorId}`}</h2>
+              <h2 id="modal-titulo-encuesta" className="modal-titulo">{textoPorAmbito(TITLES[infoIndicadorId] || `Indicador ${infoIndicadorId}`)}</h2>
               <button
                 type="button"
                 className="modal-cerrar"
@@ -259,7 +264,7 @@ export default function Encuesta() {
               </button>
             </div>
             <div className="modal-texto">
-              {getModalTexto(infoIndicadorId)
+              {textoPorAmbito(getModalTexto(infoIndicadorId))
                 .split(/\n\n+/)
                 .filter((p) => p.trim())
                 .map((textBlock, i) => {

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 import { useDataStore } from '../store/useDataStore'
-import { ENCUESTA } from '../data/encuestaConfig'
+import { ENCUESTA, getOptionsForBlock } from '../data/encuestaConfig'
 
 function formatValor(v) {
   if (v == null || (typeof v === 'number' && Number.isNaN(v))) return '—'
@@ -16,6 +16,7 @@ export default function Ranking() {
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
   const reiniciar = useDataStore((s) => s.reiniciar)
   const encuestaRespuestas = useDataStore((s) => s.encuestaRespuestas)
+  const ambito = useDataStore((s) => s.ambito)
 
   if (!ranking) {
     return (
@@ -220,8 +221,9 @@ export default function Ranking() {
                   const selected = block.type === 'checkbox'
                     ? (Array.isArray(ans) ? ans : [])
                     : (ans ? [ans] : [])
+                  const opts = getOptionsForBlock(block, ambito)
                   const labels = selected
-                    .map((v) => block.options.find((o) => o.value === v)?.label)
+                    .map((v) => opts.find((o) => o.value === v)?.label)
                     .filter(Boolean)
                   if (labels.length === 0) return null
                   return (

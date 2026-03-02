@@ -48,6 +48,7 @@
     { "nombre": "Fuerza Popular", "valor35": 16800 },
     { "nombre": "Renovación Popular", "valor35": 16400 },
     { "nombre": "Somos Perú", "valor35": 16000 },
-    { "nombre": "Juntos por el Perú", "valor35": 14635 }
+    { "nombre": "Juntos por el Perú", "valor35": 14635 },
+    { "nombre": "CPP", "valor35": 14000 }
   ]
 }

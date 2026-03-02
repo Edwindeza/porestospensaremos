@@ -1842,6 +1842,7 @@ a:not(.btn):not(.app-logo):not(.app-nav a):hover {
 
 .page-links-ranking {
   margin-top: var(--space-xl);
+  justify-content: center;
 }
 
 .table-wrap {

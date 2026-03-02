@@ -19,7 +19,9 @@ export default function Indicador() {
   const setInfoIndicadorId = useDataStore((s) => s.setInfoIndicadorId)
   const descartadosPorIndicador = useDataStore((s) => s.descartadosPorIndicador)
   const descartadosTotal = useDataStore((s) => s.descartadosTotal)
-  const title = TITLES[id] || `Indicador ${id}`
+  const ambito = useDataStore((s) => s.ambito)
+  const tituloSenado = ambito === 'regional' ? 'Senado Regional' : 'Senado Nacional'
+  const title = (TITLES[id] || `Indicador ${id}`).replace(/Senado Nacional/g, tituloSenado)
 
   if (!indicadores) {
     return (
@@ -170,7 +172,7 @@ export default function Indicador() {
           ) : (
             <div className="indicador-slider-wrap">
               <label className="indicador-slider-label" htmlFor={`umbral-${id}`}>
-                Tu umbral (cuánto toleras): {formatValue(umbral, meta.unit)}{id === '1' ? '% candidatos con sentencia firme' : id === '3' ? '  candidatos sin declarar ingresos' : id === '5' ? ' candidatos con historial #PorEstosNo' : id === '6' ? ' congresistas actuales que buscan ser senadores' : id === '7' ? ' candidatos hábiles al Senado Nacional' : ''}
+                Tu umbral (cuánto toleras): {formatValue(umbral, meta.unit)}{id === '1' ? '% candidatos con sentencia firme' : id === '3' ? '  candidatos sin declarar ingresos' : id === '5' ? ' candidatos con historial #PorEstosNo' : id === '6' ? ' congresistas actuales que buscan ser senadores' : id === '7' ? ` candidatos hábiles al ${tituloSenado}` : ''}
               </label>
               <input
                 id={`umbral-${id}`}

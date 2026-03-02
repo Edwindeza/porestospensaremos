@@ -36,7 +36,10 @@ export default function Layout({ children }) {
   const pathAnterior = tieneAnterior ? PASOS[pasoActual - 1] : null
   const pathSiguiente = tieneSiguiente ? PASOS[pasoActual + 1] : null
 
-  const tituloModal = infoIndicadorId ? (TITLES[infoIndicadorId] || `Indicador ${infoIndicadorId}`) : ''
+  const tituloSenado = ambito === 'regional' ? 'Senado Regional' : 'Senado Nacional'
+  const tituloModal = infoIndicadorId
+    ? (TITLES[infoIndicadorId] || `Indicador ${infoIndicadorId}`).replace(/Senado Nacional/g, tituloSenado)
+    : ''
 
   return (
     <>
@@ -152,6 +155,7 @@ export default function Layout({ children }) {
             </div>
             <div className="modal-texto">
               {getModalTexto(infoIndicadorId)
+                .replace(/Senado Nacional/g, tituloSenado)
                 .split(/\n\n+/)
                 .filter((p) => p.trim())
                 .map((block, i) => {

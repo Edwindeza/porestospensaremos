@@ -33,10 +33,10 @@
       "rangeFilter": true
     },
     "5": {
-      "label": "Cantidad de Regiones con al menos un Candidato",
+      "label": "Candidatos con historial #PorEstosNo (de 30)",
       "min": 0,
       "max": 30,
-      "higherIsBetter": true,
+      "higherIsBetter": false,
       "unit": ""
     },
     "6": {
@@ -96,7 +96,8 @@
     "Unidad Nacional",
     "Unido Perú",
     "Venceremos",
-    "Verde"
+    "Verde",
+    "CPP"
   ],
   "i1": {
     "Ahora Nación": 8.2,
@@ -133,7 +134,8 @@
     "Unidad Nacional": 5.9,
     "Unido Perú": 12.1,
     "Venceremos": 8.0,
-    "Verde": 4.2
+    "Verde": 4.2,
+    "CPP": 0
   },
   "i2": {
     "Ahora Nación": 6.37,
@@ -170,7 +172,8 @@
     "Unidad Nacional": 5.37,
     "Unido Perú": 6.39,
     "Venceremos": 4.78,
-    "Verde": 2.90
+    "Verde": 2.90,
+    "CPP": 0
   },
   "i3": {
     "Ahora Nación": 4,
@@ -207,7 +210,8 @@
     "Unidad Nacional": 9,
     "Unido Perú": 10,
     "Venceremos": 12,
-    "Verde": 3
+    "Verde": 3,
+    "CPP": 0
   },
   "i4b": {
     "Ahora Nación": 6387,
@@ -228,7 +232,6 @@
     "Pais para Todos": 5004,
     "Partido Morado": 6399,
     "Peru Acción": 2326,
-    "Peru Federal": 4000,
     "Peru Libre": 6213,
     "Peru Primero": 3882,
     "Podemos Perú": 6386,
@@ -240,48 +243,48 @@
     "Renovación Popular": 13400,
     "Si Creo": 9931,
     "Somos Perú": 7057,
-    "Un Camino Diferente": 2500,
     "Unidad Nacional": 5976,
     "Unido Perú": 4969,
     "Venceremos": 5266,
     "Verde": 2581
   },
   "i5": {
-    "Ahora Nación": 21,
-    "Alianza para el Progreso": 24,
-    "APRA": 21,
-    "Avanza Pais": 11,
-    "Buen Gobierno": 21,
-    "Cooperación Popular": 24,
-    "Fe en el Peru": 8,
-    "Frente de la Esperanza": 23,
-    "FREPAP": 24,
-    "Fuerza Popular": 26,
-    "Fuerza y Libertad": 23,
-    "Integridad Democrática": 17,
-    "Juntos por el Perú": 18,
-    "Libertad Popular": 8,
-    "Obras": 19,
-    "Pais para Todos": 19,
-    "Partido Morado": 19,
-    "Peru Acción": 11,
-    "Peru Federal": 12,
-    "Peru Libre": 26,
-    "Peru Primero": 24,
-    "Podemos Perú": 20,
-    "PPP": 2,
-    "Primero La Gente": 12,
-    "PRIN": 11,
-    "Progresemos": 22,
-    "PTE": 2,
-    "Renovación Popular": 23,
+    "Ahora Nación": 26,
+    "Alianza para el Progreso": 27,
+    "APRA": 25,
+    "Avanza Pais": 25,
+    "Buen Gobierno": 25,
+    "Cooperación Popular": 26,
+    "Fe en el Peru": 10,
+    "Frente de la Esperanza": 27,
+    "FREPAP": 27,
+    "Fuerza Popular": 27,
+    "Fuerza y Libertad": 27,
+    "Integridad Democrática": 25,
+    "Juntos por el Perú": 23,
+    "Libertad Popular": 25,
+    "Obras": 21,
+    "Pais para Todos": 26,
+    "Partido Morado": 21,
+    "Peru Acción": 17,
+    "Peru Federal": 18,
+    "Peru Libre": 27,
+    "Peru Primero": 27,
+    "Podemos Perú": 27,
+    "PPP": 7,
+    "Primero La Gente": 20,
+    "PRIN": 15,
+    "Progresemos": 25,
+    "PTE": 6,
+    "Renovación Popular": 27,
     "Si Creo": 4,
-    "Somos Perú": 23,
-    "Un Camino Diferente": 23,
-    "Unidad Nacional": 21,
-    "Unido Perú": 7,
-    "Venceremos": 22,
-    "Verde": 18
+    "Somos Perú": 27,
+    "Un Camino Diferente": 26,
+    "Unidad Nacional": 27,
+    "Unido Perú": 23,
+    "Venceremos": 25,
+    "Verde": 27,
+    "CPP": 0
   },
   "i6": {
     "Ahora Nación": 0,
@@ -318,7 +321,8 @@
     "Unidad Nacional": 0,
     "Unido Perú": 0,
     "Venceremos": 0,
-    "Verde": 0
+    "Verde": 0,
+    "CPP": 0
   },
   "i7": {
     "Ahora Nación": 49,
@@ -355,7 +359,8 @@
     "Unidad Nacional": 51,
     "Unido Perú": 33,
     "Venceremos": 50,
-    "Verde": 48
+    "Verde": 48,
+    "CPP": 0
   },
   "i8": {
     "Ahora Nación": 0,
@@ -392,6 +397,7 @@
     "Unidad Nacional": 2.75,
     "Unido Perú": 0,
     "Venceremos": 0,
-    "Verde": 0
+    "Verde": 0,
+    "CPP": 0
   }
 }
