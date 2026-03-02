@@ -161,9 +161,10 @@ export const useDataStore = create((set) => ({
     try {
       const ambito = useDataStore.getState().ambito
       const indicadoresUrl = ambito === 'regional' ? '/data/indicadores-regional.json' : '/data/indicadores.json'
+      const rankingUrl = ambito === 'regional' ? '/data/ranking-regional.json' : '/data/ranking.json'
       const [ind, rank] = await Promise.all([
         fetch(indicadoresUrl).then((r) => r.json()),
-        fetch('/data/ranking.json').then((r) => r.json()),
+        fetch(rankingUrl).then((r) => r.json()),
       ])
       set((state) => {
         const nextUmbrales = { ...state.umbrales }

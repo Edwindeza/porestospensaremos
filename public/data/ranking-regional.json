@@ -1,0 +1,53 @@
+{
+  "pesos": {
+    "sentencias": 20,
+    "preparacion": 20,
+    "ingresosNulos": 10,
+    "ingresosEfectivos": 5,
+    "regionesRepresentadas": 25,
+    "reeleccion": 10,
+    "equipoCompleto": 5,
+    "reinfo": 5,
+    "total": 100
+  },
+  "escalas": {
+    "ranking35": { "min": 0, "max": 35000, "descripcion": "Valor compuesto regional (35 es lo más óptimo)" }
+  },
+  "partidos": [
+    { "nombre": "Peru Libre", "valor35": 29962 },
+    { "nombre": "Peru Primero", "valor35": 29603 },
+    { "nombre": "Fuerza y Libertad", "valor35": 28300 },
+    { "nombre": "Ahora Nación", "valor35": 27309 },
+    { "nombre": "Podemos Perú", "valor35": 26725 },
+    { "nombre": "Alianza para el Progreso", "valor35": 26326 },
+    { "nombre": "FREPAP", "valor35": 26301 },
+    { "nombre": "Libertad Popular", "valor35": 25757 },
+    { "nombre": "APRA", "valor35": 25467 },
+    { "nombre": "Unidad Nacional", "valor35": 25466 },
+    { "nombre": "Integridad Democrática", "valor35": 25200 },
+    { "nombre": "Buen Gobierno", "valor35": 24800 },
+    { "nombre": "Frente de la Esperanza", "valor35": 24400 },
+    { "nombre": "PPP", "valor35": 24000 },
+    { "nombre": "PTE", "valor35": 23600 },
+    { "nombre": "PRIN", "valor35": 23200 },
+    { "nombre": "Verde", "valor35": 22800 },
+    { "nombre": "Progresemos", "valor35": 22400 },
+    { "nombre": "Primero La Gente", "valor35": 22000 },
+    { "nombre": "Unido Perú", "valor35": 21600 },
+    { "nombre": "Pais para Todos", "valor35": 21200 },
+    { "nombre": "Fe en el Peru", "valor35": 20800 },
+    { "nombre": "Un Camino Diferente", "valor35": 20400 },
+    { "nombre": "Si Creo", "valor35": 20000 },
+    { "nombre": "Peru Acción", "valor35": 19600 },
+    { "nombre": "Obras", "valor35": 19200 },
+    { "nombre": "Venceremos", "valor35": 18800 },
+    { "nombre": "Cooperación Popular", "valor35": 18400 },
+    { "nombre": "Peru Federal", "valor35": 18000 },
+    { "nombre": "Partido Morado", "valor35": 17600 },
+    { "nombre": "Avanza Pais", "valor35": 17200 },
+    { "nombre": "Fuerza Popular", "valor35": 16800 },
+    { "nombre": "Renovación Popular", "valor35": 16400 },
+    { "nombre": "Somos Perú", "valor35": 16000 },
+    { "nombre": "Juntos por el Perú", "valor35": 14635 }
+  ]
+}
